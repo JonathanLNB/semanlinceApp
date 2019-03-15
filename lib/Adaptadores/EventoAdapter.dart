@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/TDA/Evento.dart';
 
-class Categoria extends StatelessWidget {
-  String nombre = "";
-  String imagen = "";
+class EventoAdapter extends StatelessWidget {
+  Evento evento;
 
-  Categoria(this.nombre, this.imagen);
+  EventoAdapter(this.evento);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class Categoria extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        image: DecorationImage(fit: BoxFit.cover, image: AssetImage(imagen)),
+        image: DecorationImage(fit: BoxFit.cover, image: AssetImage(evento.getImagen())),
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
         shape: BoxShape.rectangle,
         boxShadow: <BoxShadow>[
@@ -60,11 +60,11 @@ class Categoria extends StatelessWidget {
       child: (Container(
         margin: EdgeInsets.only(left: 5, top: 40, right: 5),
         child: Text(
-          nombre,
+          evento.getNombre(),
           textAlign: TextAlign.left,
           style: TextStyle(
               color: AppColors.colorAccent,
-              fontSize: nombre.length>40?13.0:18.0,
+              fontSize: evento.getNombre().length>40?13.0:18.0,
               fontFamily: "GoogleSans"),
         ),
       )),

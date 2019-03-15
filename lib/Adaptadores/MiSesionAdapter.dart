@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/TDA/Evento.dart';
+import 'package:semana_lince/TDA/Sesion.dart';
 
-class Evento extends StatelessWidget {
-  String nombreAct = "Baile";
-  String imagen = "assets/images/conferencia.jpg";
+class MiSesionAdapter extends StatelessWidget {
+  Sesion sesion;
 
-  Evento(this.nombreAct);
+  MiSesionAdapter(this.sesion);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class Evento extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        image: DecorationImage(fit: BoxFit.cover, image: AssetImage(imagen)),
+        image: DecorationImage(fit: BoxFit.cover, image: AssetImage(sesion.getImagen())),
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
         shape: BoxShape.rectangle,
         boxShadow: <BoxShadow>[
@@ -58,7 +59,7 @@ class Evento extends StatelessWidget {
       height: 350.0,
       width: 250.0,
       child: Text(
-        nombreAct,
+        sesion.getNombre(),
         textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.white,

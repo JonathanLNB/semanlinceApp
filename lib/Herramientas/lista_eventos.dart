@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:semana_lince/Adaptadores/evento.dart';
+import 'package:semana_lince/Adaptadores/MiSesionAdapter.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/TDA/Evento.dart';
+import 'package:semana_lince/TDA/Sesion.dart';
 import 'package:semana_lince/detalles.dart';
 
 class ListaEventos extends StatelessWidget {
@@ -8,7 +10,12 @@ class ListaEventos extends StatelessWidget {
 
   ListaEventos(this.titulo);
 
-  List<String> lista = ['FL Studio', 'Danza', 'Hackaton', 'PostgreSQL'];
+  List<Sesion> lista = [
+    new Sesion(1, 1, 'FL Studio'),
+    new Sesion(2, 2, 'Danza'),
+    new Sesion(3, 3, 'Hackaton'),
+    new Sesion(4, 4, 'PostgreSQL'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +55,11 @@ class ListaEventos extends StatelessWidget {
       height: 250,
       child: ListView.builder(
         itemBuilder: (context, index) {
-          String nombre = lista[index];
-          return Evento(nombre);
+          Sesion aux = lista[index];
+          return MiSesionAdapter(aux);
         },
-        padding: EdgeInsets.only(top: 25.0, left: 20.0, right: 25.0, bottom: 25.0),
+        padding:
+            EdgeInsets.only(top: 25.0, left: 20.0, right: 25.0, bottom: 25.0),
         scrollDirection: Axis.horizontal,
         itemCount: lista.length,
       ),

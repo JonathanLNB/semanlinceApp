@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:semana_lince/Adaptadores/categoria.dart';
+import 'package:semana_lince/Adaptadores/EventoAdapter.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/TDA/Evento.dart';
 
 class ListaCategorias extends StatelessWidget {
   String titulo = "Mis Actividades";
 
   ListaCategorias(this.titulo);
 
-  List<String> lista = ['El uso de las redes sociales y su efecto en las relaciones interpersonales', 'Introducción a la Dinámica Molecular para Ing. Química y áreas afines.', 'Hackaton', 'Uso de Caldera', 'Más'];
+  List<Evento> lista = [
+    new Evento(1, 1, 'El uso de las redes sociales y su efecto en las relaciones interpersonales'),
+    new Evento(2, 2, 'Introducción a la Dinámica Molecular para Ing. Química y áreas afines.'),
+    new Evento(3, 3, 'Hackaton'),
+    new Evento(4, 4, 'Uso de Caldera'),
+    new Evento(0, 0,  'Más'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +92,11 @@ class ListaCategorias extends StatelessWidget {
       height: 250,
       child: ListView.builder(
         itemBuilder: (context, index) {
-          String nombre = lista[index];
-          if (nombre == 'Más')
+          Evento aux = lista[index];
+          if (aux.getNombre() == 'Más')
             return getMas(context);
           else
-            return Categoria(nombre, "assets/images/conferencia.jpg");
+            return EventoAdapter(aux);
         },
         padding:
             EdgeInsets.only(top: 25.0, left: 20.0, right: 25.0, bottom: 25.0),
