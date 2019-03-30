@@ -39,6 +39,9 @@ flutter:
 
   assets:
   - assets/images/
+  - assets/images/Cultura/
+  - assets/images/Deportivo/
+  - assets/images/Tecno/
 
   fonts:
   - family: GoogleSans

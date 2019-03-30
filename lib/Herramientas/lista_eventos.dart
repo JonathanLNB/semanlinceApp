@@ -3,19 +3,12 @@ import 'package:semana_lince/Adaptadores/MiSesionAdapter.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Evento.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
-import 'package:semana_lince/detalles.dart';
 
 class ListaEventos extends StatelessWidget {
+  List<Sesion> lista;
   String titulo = "Mis Actividades";
 
-  ListaEventos(this.titulo);
-
-  List<Sesion> lista = [
-    new Sesion(1, 1, 'FL Studio'),
-    new Sesion(2, 2, 'Danza'),
-    new Sesion(3, 3, 'Hackaton'),
-    new Sesion(4, 4, 'PostgreSQL'),
-  ];
+  ListaEventos(this.titulo, this.lista);
 
   @override
   Widget build(BuildContext context) {

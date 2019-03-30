@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/TDA/Persona.dart';
 
 class UserInfo extends StatelessWidget {
+  Persona persona;
+
+  UserInfo(this.persona);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -10,7 +15,7 @@ class UserInfo extends StatelessWidget {
 
   Container headerInfo(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 140.0),
+      margin: EdgeInsets.only(top: 100.0),
       height: 250.0,
       child: Stack(
         children: <Widget>[
@@ -28,7 +33,7 @@ class UserInfo extends StatelessWidget {
                     height: 50.0,
                   ),
                   Text(
-                    "Jonathan Leonardo Nieto Bustamante",
+                    persona.getNombre(),
                     style: TextStyle(
                       color: AppColors.verdeColor,
                       fontSize: 20.0,
@@ -41,7 +46,7 @@ class UserInfo extends StatelessWidget {
                     height: 5.0,
                   ),
                   Text(
-                    "Ingenieria en Sistemas Computacionales",
+                    persona.getCarrera(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.grisObscuro,
@@ -49,29 +54,82 @@ class UserInfo extends StatelessWidget {
                       fontFamily: "GoogleSans",
                     ),
                   ),
-                  Container(
-                    height: 40.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          child: ListTile(
-                            title: Text(
-                              "15030089",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "GoogleSans",
-                                  color: AppColors.verdeDarkLightColor),
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 40.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              child: ListTile(
+                                title: Text(
+                                  persona.getNoControl(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "GoogleSans",
+                                      color: AppColors.verdeDarkLightColor),
+                                ),
+                                subtitle: Text("No. Control",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontFamily: "GoogleSans")),
+                              ),
                             ),
-                            subtitle: Text("No. Control",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 12.0, fontFamily: "GoogleSans")),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        _onTapImage(context)); //
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                margin: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image:
+                                          AssetImage("assets/images/qr.png")),
+                                ),
+                              ),
+                            )
+                          ]),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        _onTapImage(context)); //
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                margin: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image:
+                                          AssetImage("assets/images/signout.png")),
+                                ),
+                              ),
+                            )
+                          ]),
+                    ],
                   ),
                 ],
               ),
@@ -92,6 +150,37 @@ class UserInfo extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  _onTapImage(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        Image.network(
+          "https://unitag-qr-code-generation.p.mashape.com/api?data={\"TYPE\":\"text\",\"DATA\":{\"TEXT\":\"" +
+              persona.getNoControl() +
+              "\"}}&setting={\"LAYOUT\":{\"COLORBG\":\"FFFFFF\",\"COLOR1\":\"5d9dcb\",\"COLOR2\":\"23ba41\",\"GRADIENT_TYPE\":\"DIAG1\"},\"EYES\":{\"EYE_TYPE\":\"Grid\"},\"E\":\"H\",\"BODY_TYPE\":0}",
+          headers: {
+            "X-Mashape-Key":
+                "1F8Kl4KhQ0mshCmvdKfmHjJUv2pzp11rwE3jsnvREdfYdKIFLY"
+          },
+          fit: BoxFit.contain,
+        ),
+        // Show your Image
+        Align(
+          alignment: Alignment.topRight,
+          child: RaisedButton.icon(
+              color: AppColors.verdeDarkColor,
+              textColor: Colors.white,
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+              label: Text('Cerrar')),
+        ),
+      ],
     );
   }
 }

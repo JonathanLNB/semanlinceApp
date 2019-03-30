@@ -63,7 +63,7 @@ class MiSesionAdapter extends StatelessWidget {
         textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.white,
-            fontSize: 30.0,
+            fontSize: sesion.getNombre().length > 40 ? 20.0 : 25.0,
             fontFamily: "GoogleSans",
             fontWeight: FontWeight.bold),
       ),

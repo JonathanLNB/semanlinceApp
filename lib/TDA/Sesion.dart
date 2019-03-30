@@ -2,18 +2,20 @@ class Sesion {
   int idEvento;
   int idCategoria;
   String nombre;
+  String fecha;
+  String hora;
 
-  Sesion(this.idEvento, this.idCategoria, this.nombre);
+  Sesion(this.idEvento, this.idCategoria, this.nombre, this.fecha, this.hora);
 
-  getIdEvento() {
+  int getIdEvento() {
     return idEvento;
   }
 
-  getNombre() {
+  String getNombre() {
     return nombre;
   }
 
-  getImagen() {
+  String getImagen() {
     switch (idCategoria) {
       case 1:
         //Academica
@@ -39,5 +41,11 @@ class Sesion {
         //No definido
         return "assets/images/conferencia.jpg";
     }
+  }
+  String getFecha(){
+    return fecha;
+  }
+  String getHora(){
+    return hora;
   }
 }
