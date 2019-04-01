@@ -1,24 +1,12 @@
+import 'package:semana_lince/TDA/Encargado.dart';
+
 class Persona {
-  int idCarrera;
+  String idUsuario;
   String nombre;
-  String carrera;
-  String noControl;
+  int semestre;
+  int idCarrera;
+  Encargado encargado;
 
-  Persona(this.idCarrera, this.nombre, this.carrera, this.noControl);
+  Persona(this.idCarrera, this.nombre, this.idUsuario, this.semestre, this.encargado);
 
-  String getNombre() {
-    return nombre;
-  }
-
-  String getCarrera() {
-    return carrera;
-  }
-
-  String getNoControl() {
-    return noControl;
-  }
-
-  int getIdCarrera() {
-    return idCarrera;
-  }
 }

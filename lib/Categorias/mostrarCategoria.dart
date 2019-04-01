@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Busqueda/mostrarEventos.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Herramientas/lista_categorias.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
@@ -39,7 +40,7 @@ class MostrarCategoria extends StatelessWidget {
               ? EdgeInsets.only(left: 20, top: 40, right: 10)
               : EdgeInsets.only(left: 20, top: 50, right: 10),
           child: Text(
-            "Categorias",
+            Strings.categorias,
             style: TextStyle(
                 color: AppColors.colorAccent,
                 fontSize: 30.0,

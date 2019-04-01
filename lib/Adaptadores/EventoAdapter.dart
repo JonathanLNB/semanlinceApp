@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Busqueda/mostrarSesiones.dart';
+import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Evento.dart';
 
@@ -49,7 +50,7 @@ class _EventoAdapter extends State<EventoAdapter>
       child: ClipRRect(
         borderRadius: new BorderRadius.circular(8.0),
         child: Image.asset(
-          evento.getImagen(),
+          Herramientas.getImagen(evento.idCategoria),
           fit: BoxFit.cover,
         ),
       ),
@@ -73,11 +74,11 @@ class _EventoAdapter extends State<EventoAdapter>
       child: (Container(
         margin: EdgeInsets.only(left: 5, top: 40, right: 5),
         child: Text(
-          evento.getNombre(),
+          evento.evento,
           textAlign: TextAlign.left,
           style: TextStyle(
               color: AppColors.colorAccent,
-              fontSize: evento.getNombre().length > 40 ? 13.0 : 18.0,
+              fontSize: evento.evento.length > 40 ? 13.0 : 18.0,
               fontFamily: "GoogleSans"),
         ),
       )),

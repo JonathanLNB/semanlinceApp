@@ -11,13 +11,11 @@ class ListaCategorias extends StatelessWidget {
   ListaCategorias(this.titulo, this.idCategoria);
 
   List<Evento> lista = [
-    new Evento(1, 1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales'),
-    new Evento(2, 2,
-        'Introducción a la Dinámica Molecular para Ing. Química y áreas afines.'),
-    new Evento(3, 3, 'Hackaton'),
-    new Evento(4, 4, 'Uso de Caldera'),
-    new Evento(0, 0, 'Más'),
+    new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", 2, 3),
+    new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", 2, 3),
+    new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3),
+    new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", 2, 3),
+    new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", 2, 3),
   ];
 
   @override
@@ -106,8 +104,7 @@ class ListaCategorias extends StatelessWidget {
       child: ListView.builder(
         itemBuilder: (context, index) {
           Evento aux = lista[index];
-          aux.generarRandom();
-          if (aux.getNombre() == 'Más')
+          if (aux.idEvento == 0)
             return getMas(context);
           else
             return new EventoAdapter(aux);

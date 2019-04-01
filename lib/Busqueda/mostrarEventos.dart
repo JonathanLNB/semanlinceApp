@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Adaptadores/EventoAdapter.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Herramientas/lista_categorias.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
@@ -24,12 +25,11 @@ class _Buscador extends State<MostrarEventos> {
   @override
   initState() {
     lista = [
-      new Evento(1, 1,
-          'El uso de las redes sociales y su efecto en las relaciones interpersonales'),
-      new Evento(2, 2,
-          'Introducción a la Dinámica Molecular para Ing. Química y áreas afines.'),
-      new Evento(3, 3, 'Hackaton'),
-      new Evento(4, 4, 'Uso de Caldera'),
+      new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", 2, 3),
+      new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", 2, 3),
+      new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3),
+      new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", 2, 3),
+      new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", 2, 3),
     ];
     controller.addListener(() {
       setState(() {
@@ -63,13 +63,12 @@ class _Buscador extends State<MostrarEventos> {
           itemCount: lista.length,
           itemBuilder: (BuildContext context, int index) {
             Evento evento = lista[index];
-            evento.generarRandom();
             return filter == null || filter == ""
                 ? new Container(
                     margin: EdgeInsets.only(top: 10, bottom: 10),
                     child: EventoAdapter(evento),
                   )
-                : evento.getNombre().toLowerCase().contains(filter.toLowerCase())
+                : evento.evento.toLowerCase().contains(filter.toLowerCase())
                     ? Container(
                         margin: EdgeInsets.only(top: 10, bottom: 10),
                         child: EventoAdapter(evento),
@@ -84,7 +83,7 @@ class _Buscador extends State<MostrarEventos> {
                 ? EdgeInsets.only(left: 20, top: 40, right: 10)
                 : EdgeInsets.only(left: 20, top: 50, right: 10),
             child: Text(
-              "Buscardor",
+              Strings.buscador,
               style: TextStyle(
                   color: AppColors.colorAccent,
                   fontSize: 30.0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Persona.dart';
 
@@ -33,7 +34,7 @@ class UserInfo extends StatelessWidget {
                     height: 50.0,
                   ),
                   Text(
-                    persona.getNombre(),
+                    persona.nombre,
                     style: TextStyle(
                       color: AppColors.verdeColor,
                       fontSize: 20.0,
@@ -46,7 +47,7 @@ class UserInfo extends StatelessWidget {
                     height: 5.0,
                   ),
                   Text(
-                    persona.getCarrera(),
+                    Herramientas.getCarrera(persona.idCarrera),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.grisObscuro,
@@ -64,7 +65,7 @@ class UserInfo extends StatelessWidget {
                             Expanded(
                               child: ListTile(
                                 title: Text(
-                                  persona.getNoControl(),
+                                  persona.idUsuario,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -110,21 +111,18 @@ class UserInfo extends StatelessWidget {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        _onTapImage(context)); //
+                                print("Cerrar Sesión");
                               },
                               child: Container(
-                                height: 40,
-                                width: 40,
-                                margin: EdgeInsets.all(15),
+                                height: 44,
+                                width: 44,
+                                margin: EdgeInsets.all(13),
                                 decoration: BoxDecoration(
                                   color: Colors.transparent,
                                   image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image:
-                                          AssetImage("assets/images/signout.png")),
+                                      image: AssetImage(
+                                          "assets/images/signout.png")),
                                 ),
                               ),
                             )
@@ -157,17 +155,19 @@ class UserInfo extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: <Widget>[
-        Image.network(
-          "https://unitag-qr-code-generation.p.mashape.com/api?data={\"TYPE\":\"text\",\"DATA\":{\"TEXT\":\"" +
-              persona.getNoControl() +
-              "\"}}&setting={\"LAYOUT\":{\"COLORBG\":\"FFFFFF\",\"COLOR1\":\"5d9dcb\",\"COLOR2\":\"23ba41\",\"GRADIENT_TYPE\":\"DIAG1\"},\"EYES\":{\"EYE_TYPE\":\"Grid\"},\"E\":\"H\",\"BODY_TYPE\":0}",
-          headers: {
-            "X-Mashape-Key":
-                "1F8Kl4KhQ0mshCmvdKfmHjJUv2pzp11rwE3jsnvREdfYdKIFLY"
-          },
-          fit: BoxFit.contain,
+        CircularProgressIndicator(
+          backgroundColor: AppColors.verdeDarkLightColor,
         ),
-        // Show your Image
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: ClipRRect(
+            borderRadius: new BorderRadius.circular(8.0),
+            child: Image.network(
+              "http://api.qrserver.com/v1/create-qr-code/?data="+persona.idUsuario+"&size=200x200&color=43835c&ecc=H&margin=20",
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
         Align(
           alignment: Alignment.topRight,
           child: RaisedButton.icon(

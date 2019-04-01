@@ -2,36 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Adaptadores/SesionAdapter.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
+import 'package:semana_lince/TDA/Espacio.dart';
+import 'package:semana_lince/TDA/Evento.dart';
+import 'package:semana_lince/TDA/Ponente.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
 
 class MostrarSesiones extends StatelessWidget {
   List<Sesion> lista = [
-    new Sesion(
-        0,
-        1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales',
-        "27/05/2019",
-        "10:45"),
-    new Sesion(
-        0,
-        1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales',
-        "28/05/2019",
-        "10:45"),
-    new Sesion(
-        0,
-        1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales',
-        "29/05/2019",
-        "10:45"),
-    new Sesion(
-        0,
-        1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales',
-        "30/05/2019",
-        "10:45"),
+    new Sesion(1, new Evento.setSesion(1, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3), new Espacio(1, "Centro para las artes", "Ubicado en campus 2", 10), new Ponente.sinEncargado(1, "Juan Patricio", "Inge egresado", "url"), 1,
+        "10:30", "17:04"),
   ];
 
   @override
@@ -63,7 +45,7 @@ class MostrarSesiones extends StatelessWidget {
               ? EdgeInsets.only(left: 20, top: 40, right: 10)
               : EdgeInsets.only(left: 20, top: 50, right: 10),
           child: Text(
-            "Sesiones",
+            Strings.sesion,
             style: TextStyle(
                 color: AppColors.colorAccent,
                 fontSize: 30.0,

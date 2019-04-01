@@ -1,51 +1,20 @@
+import 'dart:math';
+
+import 'package:semana_lince/TDA/Espacio.dart';
+import 'package:semana_lince/TDA/Evento.dart';
+import 'package:semana_lince/TDA/Ponente.dart';
+import 'package:semana_lince/TDA/ProfeStaff.dart';
+
 class Sesion {
-  int idEvento;
-  int idCategoria;
-  String nombre;
-  String fecha;
-  String hora;
+  int idSesion;
+  Evento evento;
+  Espacio espacio;
+  Ponente ponente;
+  ProfeStaff staff;
+  int idFecha;
+  String horaInicio;
+  String horaFin;
 
-  Sesion(this.idEvento, this.idCategoria, this.nombre, this.fecha, this.hora);
+  Sesion(this.idSesion, this.evento, this.espacio, this.ponente, this.idFecha, this.horaInicio, this.horaFin);
 
-  int getIdEvento() {
-    return idEvento;
-  }
-
-  String getNombre() {
-    return nombre;
-  }
-
-  String getImagen() {
-    switch (idCategoria) {
-      case 1:
-        //Academica
-        return "assets/images/conferencia.jpg";
-        break;
-      case 2:
-        //Arte y Cultura
-        return "assets/images/conferencia.jpg";
-        break;
-      case 3:
-        //Deportivo
-        return "assets/images/conferencia.jpg";
-        break;
-      case 4:
-        //Desarrollo Profesional
-        return "assets/images/conferencia.jpg";
-        break;
-      case 5:
-        //Empresa
-        return "assets/images/conferencia.jpg";
-        break;
-      default:
-        //No definido
-        return "assets/images/conferencia.jpg";
-    }
-  }
-  String getFecha(){
-    return fecha;
-  }
-  String getHora(){
-    return hora;
-  }
 }

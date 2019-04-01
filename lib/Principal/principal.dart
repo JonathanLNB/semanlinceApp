@@ -2,29 +2,22 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Categorias/mostrarCategoria.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
 import 'package:semana_lince/Principal/user_info.dart';
 import 'package:semana_lince/Herramientas/lista_eventos.dart';
+import 'package:semana_lince/TDA/Encargado.dart';
+import 'package:semana_lince/TDA/Espacio.dart';
+import 'package:semana_lince/TDA/Evento.dart';
 import 'package:semana_lince/TDA/Persona.dart';
+import 'package:semana_lince/TDA/Ponente.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
 
 class Principal extends StatelessWidget {
   List<Sesion> lista = [
-    new Sesion(
-        1,
-        1,
-        'El uso de las redes sociales y su efecto en las relaciones interpersonales',
-        "27/05/2019",
-        "10:45"),
-    new Sesion(
-        2,
-        2,
-        'Introducción a la Dinámica Molecular para Ing. Química y áreas afines.',
-        "27/05/2019",
-        "10:45"),
-    new Sesion(3, 3, 'Hackaton', "27/05/2019", "10:45"),
-    new Sesion(4, 4, 'PostgreSQL', "27/05/2019", "10:45"),
+    new Sesion(1, new Evento.setSesion(1, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3), new Espacio(1, "Centro para las artes", "Ubicado en campus 2", 10), new Ponente.sinEncargado(1, "Juan Patricio", "Inge egresado", "url"), 1,
+        "10:30", "17:04"),
   ];
   bool datos = false;
 
@@ -48,7 +41,7 @@ class Principal extends StatelessWidget {
               ? EdgeInsets.only(left: 20, top: 40, right: 10)
               : EdgeInsets.only(left: 20, top: 50, right: 10),
           child: Text(
-            "Semana Lince",
+            Strings.semanalince,
             style: TextStyle(
                 color: AppColors.colorAccent,
                 fontSize: 30.0,
@@ -68,9 +61,9 @@ class Principal extends StatelessWidget {
           children: <Widget>[
             Column(
               children: <Widget>[
-                UserInfo(new Persona(1, "Jonathan Leonardo Nieto Bustamante",
-                    "Ingenieria en Sistemas Computacionales", "15030089")),
-                datos
+                UserInfo(new Persona(9, "Jonathan Leonardo Nieto Bustamante",
+                    "15030089", 8, new Encargado(0, "No Asignado", "", "", 9))),
+                lista.length > 0
                     ? ListaEventos("Mis Actividades", lista)
                     : Column(
                         children: <Widget>[

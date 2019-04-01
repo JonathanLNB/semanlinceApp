@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:semana_lince/DetalleSesion.dart';
+import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Evento.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
@@ -11,9 +13,18 @@ class MiSesionAdapter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Stack(
-        alignment: Alignment(0.9, 1.15),
-        children: <Widget>[card(context), gradiente(context), titulo(context)]);
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => new DetalleSesion(sesion)));
+        },
+        child: Stack(alignment: Alignment(0.9, 1.15), children: <Widget>[
+          card(context),
+          gradiente(context),
+          titulo(context)
+        ]));
   }
 
   Container card(BuildContext context) {
@@ -25,7 +36,10 @@ class MiSesionAdapter extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        image: DecorationImage(fit: BoxFit.cover, image: AssetImage(sesion.getImagen())),
+        image: DecorationImage(
+            fit: BoxFit.cover,
+            image:
+                AssetImage(Herramientas.getImagen(sesion.evento.idCategoria))),
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
         shape: BoxShape.rectangle,
         boxShadow: <BoxShadow>[
@@ -59,11 +73,11 @@ class MiSesionAdapter extends StatelessWidget {
       height: 350.0,
       width: 250.0,
       child: Text(
-        sesion.getNombre(),
+        sesion.evento.evento,
         textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.white,
-            fontSize: sesion.getNombre().length > 40 ? 20.0 : 25.0,
+            fontSize: sesion.evento.evento.length > 40 ? 20.0 : 25.0,
             fontFamily: "GoogleSans",
             fontWeight: FontWeight.bold),
       ),
