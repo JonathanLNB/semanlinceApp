@@ -16,8 +16,8 @@ import 'package:semana_lince/TDA/Sesion.dart';
 
 class Principal extends StatelessWidget {
   List<Sesion> lista = [
-    new Sesion(1, new Evento.setSesion(1, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3), new Espacio(1, "Centro para las artes", "Ubicado en campus 2", 10), new Ponente.sinEncargado(1, "Juan Patricio", "Inge egresado", "url"), 1,
-        "10:30", "17:04"),
+    //new Sesion(1, new Evento.setSesion(1, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3), new Espacio(1, "Centro para las artes", "Ubicado en campus 2", 10), new Ponente.sinEncargado(1, "Juan Patricio", "Inge egresado", "url"), 1,
+      //  "10:30", "17:04"),
   ];
   bool datos = false;
 

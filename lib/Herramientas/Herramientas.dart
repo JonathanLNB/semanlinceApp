@@ -21,7 +21,7 @@ class Herramientas {
   }
 
   static String getTipoEvento(int idTipoE) {
-    switch(idTipoE){
+    switch (idTipoE) {
       case 1:
         return "Taller";
       case 2:
@@ -38,17 +38,14 @@ class Herramientas {
   static String getImagen(int idCategoria) {
     Random random = new Random();
     int aux;
-    if (idCategoria == 1 || idCategoria == 3)
-      aux = (random.nextInt(11) + 1);
-    else if (idCategoria == 2)
-      aux = (random.nextInt(12) + 1);
+    if (idCategoria == 2)
+      aux = (random.nextInt(18) + 1);
     else
       aux = (random.nextInt(11) + 1);
-
     switch (idCategoria) {
       case 1:
         //Academica
-        return "assets/images/Tecno/$aux.jpg";
+        return "assets/images/Academica/$aux.jpg";
 
       case 2:
         //Arte y Cultura
@@ -60,14 +57,14 @@ class Herramientas {
 
       case 4:
         //Desarrollo Profesional
-        return "assets/images/Deportivo/$aux.jpg";
+        return "assets/images/Tecno/$aux.jpg";
 
       case 5:
         //Empresa
-        return "assets/images/conferencia.jpg";
+        return "assets/images/Empresas/$aux.jpg";
 
       default:
-        return "assets/images/Cultura/$aux.jpg";
+        return "assets/images/conferencia.jpg";
     }
   }
 

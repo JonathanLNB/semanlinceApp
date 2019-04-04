@@ -10,17 +10,21 @@ class ListaCategorias extends StatelessWidget {
 
   ListaCategorias(this.titulo, this.idCategoria);
 
-  List<Evento> lista = [
-    new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", 2, 3),
-    new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", 2, 3),
-    new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3),
-    new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", 2, 3),
-    new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", 2, 3),
-  ];
+  List<Evento> lista;
 
+  iniciar(){
+    lista = [
+      new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
+      new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
+      new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
+      new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
+      new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
+    ];
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    iniciar();
     return Container(
       margin: EdgeInsets.only(top: 20),
       child: Column(

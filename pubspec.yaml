@@ -42,6 +42,8 @@ flutter:
   - assets/images/Cultura/
   - assets/images/Deportivo/
   - assets/images/Tecno/
+  - assets/images/Academica/
+  - assets/images/Empresas/
 
   fonts:
   - family: GoogleSans

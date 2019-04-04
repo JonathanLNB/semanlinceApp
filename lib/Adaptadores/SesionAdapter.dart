@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:semana_lince/DetalleSesion.dart';
 import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
@@ -11,15 +12,23 @@ class SesionAdapter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Container(
-      margin: EdgeInsets.only(bottom: 20),
-      child: Stack(
-        children: <Widget>[
-          cardFecha(context),
-          card(context),
-          gradiente(context),
-          cardTexto(context),
-        ],
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => new DetalleSesion(sesion)));
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 20),
+        child: Stack(
+          children: <Widget>[
+            cardFecha(context),
+            card(context),
+            gradiente(context),
+            cardTexto(context),
+          ],
+        ),
       ),
     );
   }
