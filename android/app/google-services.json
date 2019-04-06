@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "448122508112",
+    "firebase_url": "https://semanalince.firebaseio.com",
+    "project_id": "semanalince",
+    "storage_bucket": "semanalince.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448122508112:android:daca73ec063fd53d",
+        "android_client_info": {
+          "package_name": "com.jonathanlnb.semanalince"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448122508112-f4iqju8tb51qq4biv2ri0f0jhh05nlob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jonathanlnb.semanalince",
+            "certificate_hash": "382b21a4212ed8742c2ad4e0c8031c0ec0814375"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPfDJcy8ptm7B-5wFXS5M3_WKi8RiISI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448122508112-ibsffjju10gl77hiqvse2jga6pvkdjt0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/principal.dart';
+import 'package:semana_lince/SignIn.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         home: Scaffold(
           body: SplashScreen(
             seconds: 5,
-            navigateAfterSeconds: Principal(),
+            navigateAfterSeconds: SignIn(),
             image: Image.asset("assets/images/logo.png"),
             photoSize: 60,
             loaderColor: AppColors.verdeDarkColor,
