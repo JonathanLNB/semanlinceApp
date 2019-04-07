@@ -14,7 +14,7 @@ class Sesion {
   int idFecha;
   String horaInicio;
   String horaFin;
-
-  Sesion(this.idSesion, this.evento, this.espacio, this.ponente, this.idFecha, this.horaInicio, this.horaFin);
+  bool inscrito;
+  Sesion(this.idSesion, this.evento, this.espacio, this.ponente, this.idFecha, this.horaInicio, this.horaFin, this.inscrito);
 
 }

@@ -5,38 +5,22 @@ import 'package:semana_lince/Principal/principal.dart';
 import 'package:semana_lince/SignIn.dart';
 import 'package:splashscreen/splashscreen.dart';
 
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    //final _media = MediaQuery.of(context).size;
-    return MaterialApp(
-        title: 'Semana Lince',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
-        home: Scaffold(
-          body: SplashScreen(
-            seconds: 5,
-            navigateAfterSeconds: SignIn(),
-            image: Image.asset("assets/images/logo.png"),
-            photoSize: 60,
-            loaderColor: AppColors.verdeDarkColor,
-          ),
-
-        ));
-  }
+void main(){
+  runApp(new MaterialApp(
+    title: 'Semana Lince',
+    debugShowCheckedModeBanner: false,
+    home: Scaffold(
+      body: SplashScreen(
+        seconds: 5,
+        navigateAfterSeconds: SignIn(),
+        image: Image.asset("assets/images/logo.png"),
+        photoSize: 60,
+        loaderColor: AppColors.verdeDarkColor,
+      ),
+    ),
+      routes: <String, WidgetBuilder>{
+        '/principal': (BuildContext context) => new Principal(),
+        '/signIn': (BuildContext context) => new SignIn(),
+      },
+  ));
 }

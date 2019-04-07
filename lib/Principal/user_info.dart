@@ -3,10 +3,10 @@ import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Persona.dart';
 
-class UserInfo extends StatelessWidget {
+class UserInfoM extends StatelessWidget {
   Persona persona;
 
-  UserInfo(this.persona);
+  UserInfoM(this.persona);
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +141,7 @@ class UserInfo extends StatelessWidget {
                 shape: CircleBorder(),
                 child: CircleAvatar(
                   radius: 40.0,
-                  backgroundImage: AssetImage('assets/images/io.jpg'),
+                  backgroundImage: new NetworkImage(persona.foto),
                 ),
               ),
             ],

@@ -9,28 +9,20 @@ import 'package:semana_lince/Principal/navigation_bar.dart';
 import 'package:semana_lince/TDA/Evento.dart';
 
 class MostrarEventos extends StatefulWidget {
-  int idCategoria = 0;
-  MostrarEventos(this.idCategoria);
-  State<StatefulWidget> createState() => new _Buscador(idCategoria);
+  List<Evento> lista;
+  MostrarEventos(this.lista);
+  State<StatefulWidget> createState() => new _Buscador(lista);
 }
 
 class _Buscador extends State<MostrarEventos> {
   List<Evento> lista;
   TextEditingController controller = new TextEditingController();
   String filter;
-  int idCategoria = 0;
 
-  _Buscador(this.idCategoria);
+  _Buscador(this.lista);
 
   @override
   initState() {
-    lista = [
-      new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", 2, 3),
-      new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", 2, 3),
-      new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3),
-      new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", 2, 3),
-      new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", 2, 3),
-    ];
     controller.addListener(() {
       setState(() {
         filter = controller.text;

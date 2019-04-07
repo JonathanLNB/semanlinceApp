@@ -1,13 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Busqueda/mostrarEventos.dart';
+import 'package:semana_lince/Herramientas/Progress.dart';
+import 'package:semana_lince/Herramientas/SharedPreferences.dart';
 import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Herramientas/lista_categorias.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
+import 'package:http/http.dart' as http;
+import 'package:semana_lince/TDA/Evento.dart';
 
 class MostrarCategoria extends StatelessWidget {
+  String noControl = "";
+  String noControlAux = "";
+  int idCategoria = 0;
+  SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -55,10 +65,7 @@ class MostrarCategoria extends StatelessWidget {
   Widget getBuscador(BuildContext context) {
     return new GestureDetector(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => new MostrarEventos(0)));
+          _getSharedPreferences(context);
         },
         child: Padding(
             padding: EdgeInsets.only(right: 40, bottom: 30, top: 10),
@@ -97,5 +104,67 @@ class MostrarCategoria extends StatelessWidget {
                         ],
                       ),
                     )))));
+  }
+
+  _onLoading(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        ColorLoader3(
+          radius: 20,
+          dotRadius: 8,
+        )
+      ],
+    );
+  }
+
+  _getSharedPreferences(BuildContext context) async {
+    noControlAux = await sharedPreferences.getNoControl();
+    noControl =noControlAux;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => _onLoading(context));
+    _Eventos(context);
+  }
+
+  void _Eventos(BuildContext context) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server = "${Strings.server}api/movil/eventos/all/${noControl}";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.get(Uri.encodeFull(server), headers: {
+        "content-type": "application/json",
+        "accept": "application/json"
+      });
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessWeb(data, context);
+      }
+    }
+
+    getData();
+  }
+
+  void _onSuccessWeb(data, BuildContext context) {
+    Navigator.pop(context);
+    List lista = data["eventos"];
+    List<Evento> eventosAux = [];
+    if (lista != null) {
+      for (int i = 0; i < lista.length; i++) {
+        eventosAux.add(new Evento.setBasicos(
+            lista[i]["idevento"],
+            lista[i]["evento"],
+            lista[i]["material_alumno"],
+            lista[i]["descripcion"],
+            lista[i]["idcategoria"],
+            lista[i]["idtipoe"]));
+      }
+    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => new MostrarEventos(eventosAux)));
   }
 }

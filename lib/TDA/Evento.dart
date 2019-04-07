@@ -17,8 +17,8 @@ class Evento {
 
   Evento();
   Evento.mas(this.idEvento, this.evento);
-  Evento.setBasicos(this.idEvento, this.evento, this.idCategoria, this.encargado, this.idTipoE);
-  Evento.setSesion(this.idEvento, this.evento, this.materialAlumno, this.descripcion, this.idCategoria, this.idTipoE);
+  Evento.setBasicos(this.idEvento, this.evento, this.materialAlumno, this.descripcion, this.idCategoria, this.idTipoE);
+  Evento.setSesion(this.evento, this.materialAlumno, this.descripcion, this.idCategoria, this.idTipoE);
   Evento.setTodo(this.idEvento, this.evento, this.materialAlumno, this.descripcion, this.idCategoria, this.encargado, this.idTipoE);
 
 }

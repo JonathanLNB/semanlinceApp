@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:semana_lince/Herramientas/SharedPreferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:semana_lince/Herramientas/Progress.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:semana_lince/Principal/principal.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -18,8 +23,20 @@ class SignIn extends StatefulWidget {
 class _SignIn extends State<SignIn> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
   bool _success;
-  String _userID;
+  String _userID, email, foto;
+
+  @override
+  void initState() {
+    super.initState();
+    getUser().then((user) {
+      if (user != null) {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Principal()), ModalRoute.withName('/principal'));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -33,7 +50,7 @@ class _SignIn extends State<SignIn> {
                 ? EdgeInsets.only(top: 150)
                 : EdgeInsets.only(top: 150),
             child: Text(
-              "🎉 Bienvenido 🎉",
+              "¡Bienvenido!",
               style: TextStyle(
                   color: AppColors.colorAccent,
                   fontSize: 30.0,
@@ -148,7 +165,7 @@ class _SignIn extends State<SignIn> {
     );
   }
 
-  void _signInWithGoogle() async {
+  _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -164,14 +181,155 @@ class _SignIn extends State<SignIn> {
 
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
-    setState(() {
-      if (user != null) {
-        _success = true;
-        _userID = user.uid;
-        print("Usuario: ${_userID}");
+    if (user != null) {
+      _success = true;
+      _userID = user.uid;
+      if (currentUser.email.contains("itcelaya.edu")) {
+        showDialog(context: context,barrierDismissible: false, builder: (context) => _onSuccess(context),);
+        consumirDatos(currentUser.email.split("@")[0]);
       } else {
-        _success = false;
+        showDialog(context: context, builder: (context) => _onError(context, "Esa no es tu cuenta institucional"));
+        cerrarSesion();
       }
-    });
+      foto = currentUser.photoUrl;
+    } else {
+      _success = false;
+    }
   }
+
+  Future<FirebaseUser> getUser() async {
+    return await _auth.currentUser();
+  }
+
+  void cerrarSesion() async {
+    _googleSignIn.signOut();
+    _auth.signOut();
+  }
+
+  _onSuccess(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        ColorLoader3(
+          radius: 20,
+          dotRadius: 8,
+        )
+      ],
+    );
+  }
+
+  _onError(BuildContext context, String texto) {
+    return Material(
+        color: Colors.transparent,
+        child: Stack(alignment: Alignment.center, children: <Widget>[
+          Container(
+              width: 300,
+              height: 250,
+              margin: EdgeInsets.all(50),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                  shape: BoxShape.rectangle,
+                  image: new DecorationImage(
+                      image: new AssetImage("assets/images/fondo.png"),
+                      fit: BoxFit.none,
+                      repeat: ImageRepeat.repeat),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 15.0,
+                        offset: Offset(0.0, 7.0))
+                  ]),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage('assets/images/sad.png'),
+                    )),
+                  ),
+                  Container(
+                      margin: EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        elevation: 5.0,
+                        color: Colors.white,
+                        child: Container(
+                            margin: EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            child: Text(
+                              texto,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "GoogleSans",
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.azulMarino),
+                              textAlign: TextAlign.center,
+                            )),
+                      ))
+                ],
+              )),
+          Align(
+            alignment: Alignment.topRight,
+            child: RaisedButton.icon(
+                color: AppColors.azulMarino,
+                textColor: Colors.white,
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
+                label: Text('Cerrar')),
+          )
+        ]));
+  }
+
+  void consumirDatos(String correo) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server = "${Strings.server}api/usuario";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.post(Uri.encodeFull(server),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          body: jsonEncode({"idUsuario": correo, "token": "1"}));
+      print(response.body);
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessWeb(data);
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessWeb(data) async {
+    if(data['alumno'] != null) {
+      sharedPreferences.setIdCarrera(data['alumno']['idcarrera']);
+      sharedPreferences.setNombre(data['alumno']['nombre']);
+      sharedPreferences.setNoControl(data['alumno']['idusuario']);
+      sharedPreferences.setSemestre(data['alumno']['semestre']);
+      sharedPreferences.setIdEncargado(data['alumno']['idencargado']);
+      sharedPreferences.setFoto(foto);
+      Navigator.pushAndRemoveUntil(
+          context, MaterialPageRoute(builder: (context) => Principal()),
+          ModalRoute.withName('/principal'));
+    }
+    else {
+      showDialog(context: context,
+          builder: (context) =>
+              _onError(context, "Esta cuenta no esta registrada"));
+      cerrarSesion();
+    }
+  }
+
 }

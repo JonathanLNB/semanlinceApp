@@ -1,35 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Adaptadores/EventoAdapter.dart';
 import 'package:semana_lince/Busqueda/mostrarEventos.dart';
+import 'package:semana_lince/Herramientas/Progress.dart';
+import 'package:semana_lince/Herramientas/SharedPreferences.dart';
+import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/TDA/Evento.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class ListaCategorias extends StatelessWidget {
+class ListaCategorias extends StatefulWidget {
   String titulo = "Mis Actividades";
   int idCategoria = 0;
 
   ListaCategorias(this.titulo, this.idCategoria);
 
-  List<Evento> lista;
+  State<StatefulWidget> createState() =>
+      new _ListaCategorias(titulo, idCategoria);
+}
 
-  iniciar(){
-    lista = [
-      new Evento.setSesion(1, "El uso de las redes sociales y su efecto en las relaciones interpersonales", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
-      new Evento.setSesion(2, "Introducción a la Dinámica Molecular para Ing. Química y áreas afines", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
-      new Evento.setSesion(3, "Hackaton", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
-      new Evento.setSesion(4, "Uso de caldera", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
-      new Evento.setSesion(0, "Más", "Libreta", "Descubriremos muchas cosas", idCategoria, 3),
-    ];
+class _ListaCategorias extends State<ListaCategorias> {
+  String titulo = "Mis Actividades";
+  String noControl = "";
+  String noControlAux = "";
+  int idCategoria = 0;
+  SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
+
+  _ListaCategorias(this.titulo, this.idCategoria);
+
+  List<Evento> eventos = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getSharedPreferences();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    iniciar();
     return Container(
       margin: EdgeInsets.only(top: 20),
       child: Column(
-        children: <Widget>[getTitulo(context), getLista(context)],
+        children: <Widget>[
+          getTitulo(context),
+          eventos.length > 0 ? getLista(context) : getSad()
+        ],
       ),
+    );
+  }
+
+  Column getSad() {
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 60, bottom: 20),
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage('assets/images/sad.png'),
+          )),
+        ),
+        Container(
+            margin: EdgeInsets.only(bottom: 70),
+            alignment: Alignment.center,
+            child: Material(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              elevation: 5.0,
+              color: Colors.white,
+              child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Text(
+                    "Esta categoría no tiene actividades",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "GoogleSans",
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeDarkColor),
+                    textAlign: TextAlign.left,
+                  )),
+            )),
+      ],
     );
   }
 
@@ -62,7 +117,7 @@ class ListaCategorias extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (BuildContext context) =>
-                      new MostrarEventos(idCategoria)));
+                      new MostrarEventos(eventos)));
         },
         child: Container(
             margin: EdgeInsets.only(left: 20),
@@ -107,8 +162,8 @@ class ListaCategorias extends StatelessWidget {
       height: 250,
       child: ListView.builder(
         itemBuilder: (context, index) {
-          Evento aux = lista[index];
-          if (aux.idEvento == 0)
+          Evento aux = eventos[index];
+          if (index == 4)
             return getMas(context);
           else
             return new EventoAdapter(aux);
@@ -116,9 +171,73 @@ class ListaCategorias extends StatelessWidget {
         padding:
             EdgeInsets.only(top: 25.0, left: 20.0, right: 25.0, bottom: 25.0),
         scrollDirection: Axis.horizontal,
-        itemCount: lista.length,
+        itemCount: 5,
         addAutomaticKeepAlives: true,
       ),
     );
+  }
+
+  _onLoading(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        ColorLoader3(
+          radius: 20,
+          dotRadius: 8,
+        )
+      ],
+    );
+  }
+
+  _getSharedPreferences() async {
+    noControlAux = await sharedPreferences.getNoControl();
+    setState(() {
+      noControl = noControlAux;
+    });
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => _onLoading(context));
+    _Eventos();
+  }
+
+  void _Eventos() {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server =
+        "${Strings.server}api/movil/eventos/${noControl}/${idCategoria}";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.get(Uri.encodeFull(server), headers: {
+        "content-type": "application/json",
+        "accept": "application/json"
+      });
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessWeb(data);
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessWeb(data) async {
+    Navigator.pop(context);
+    List lista = data["eventos"];
+    List<Evento> eventosAux = [];
+    if (lista != null) {
+      for (int i = 0; i < lista.length; i++) {
+        eventosAux.add(new Evento.setBasicos(
+            lista[i]["idevento"],
+            lista[i]["evento"],
+            lista[i]["material_alumno"],
+            lista[i]["descripcion"],
+            lista[i]["idcategoria"],
+            lista[i]["idtipoe"]));
+      }
+    }
+    setState(() {
+      eventos = eventosAux;
+    });
   }
 }

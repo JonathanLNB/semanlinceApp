@@ -26,7 +26,7 @@ class _EventoAdapter extends State<EventoAdapter>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => new MostrarSesiones()));
+                  builder: (BuildContext context) => new MostrarSesiones(evento.idEvento)));
         },
         child: Stack(
           children: <Widget>[cardRight(context), cardLeft(context)],
@@ -59,7 +59,7 @@ class _EventoAdapter extends State<EventoAdapter>
 
   Container cardRight(BuildContext context) {
     return Container(
-      height: 80.0,
+      height: 90.0,
       width: 250,
       margin: EdgeInsets.only(top: 120.0, left: 50.0, right: 10.0),
       decoration: BoxDecoration(
@@ -78,7 +78,7 @@ class _EventoAdapter extends State<EventoAdapter>
           textAlign: TextAlign.left,
           style: TextStyle(
               color: AppColors.colorAccent,
-              fontSize: evento.evento.length > 40 ? 13.0 : 18.0,
+              fontSize: evento.evento.length > 26 ? 13.0 : 18.0,
               fontFamily: "GoogleSans"),
         ),
       )),

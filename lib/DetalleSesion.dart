@@ -2,19 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Herramientas/Herramientas.dart';
+import 'package:semana_lince/Herramientas/Progress.dart';
+import 'package:semana_lince/Herramientas/SharedPreferences.dart';
 import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
+import 'package:semana_lince/Principal/principal.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class DetalleSesion extends StatelessWidget {
+  SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
   Sesion sesion;
+  String nombre;
+  String noControl;
 
   DetalleSesion(this.sesion);
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    _getSharedPreferences();
     return Scaffold(
         body: Stack(children: <Widget>[
       Container(
@@ -69,13 +81,81 @@ class DetalleSesion extends StatelessWidget {
           alignment: Alignment.topRight,
           child: new FloatingActionButton(
             backgroundColor: Colors.white,
-            onPressed: () {},
-            tooltip: 'Inscribirse',
-            child: new Image.asset(
-              "assets/images/marca.png",
-              width: 25,
-              height: 25,
-            ),
+            onPressed: () {
+              if (sesion.inscrito) {
+                showDialog(
+                    context: context,
+                    builder: (_) => FlareGiffyDialog(
+                          flarePath: 'assets/images/space_demo.flr',
+                          flareAnimation: 'loading',
+                          title: Text(
+                            'Confirmación 😱',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontFamily: "GoogleSans",
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.verdeDarkLightColor),
+                          ),
+                          description: Text(
+                            '¿${nombre.split(" ")[2]} estás segur@ de desinscribirte a esta actividad?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "GoogleSans",
+                                color: AppColors.azulMarino),
+                          ),
+                          onOkButtonPressed: () {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => _onLoading(context));
+                            _Eliminar(context);
+                          },
+                        ));
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (_) => FlareGiffyDialog(
+                          flarePath: 'assets/images/space_demo.flr',
+                          flareAnimation: 'loading',
+                          title: Text(
+                            'Confirmación 👌',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontFamily: "GoogleSans",
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.verdeDarkLightColor),
+                          ),
+                          description: Text(
+                            '¿${nombre.split(" ")[2]} estás segur@ de inscribirte a esta actividad?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "GoogleSans",
+                                color: AppColors.azulMarino),
+                          ),
+                          onOkButtonPressed: () {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => _onLoading(context));
+                            _Inscribir(context);
+                          },
+                        ));
+              }
+            },
+            tooltip: sesion.inscrito ? 'Inscribirse' : 'Desinscribirse',
+            child: sesion.inscrito
+                ? new Image.asset(
+                    "assets/images/cruzar.png",
+                    width: 25,
+                    height: 25,
+                  )
+                : new Image.asset(
+                    "assets/images/marca.png",
+                    width: 25,
+                    height: 25,
+                  ),
           ),
         ),
       ),
@@ -115,7 +195,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 color: Colors.white,
@@ -124,17 +204,17 @@ class DetalleSesion extends StatelessWidget {
                     bottomRight: Radius.circular(10)),
                 elevation: 15.0,
                 child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.all(10),
-                    child: Text(
-                      sesion.evento.descripcion,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: "GoogleSans",
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.center,
-                    )),
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.all(10),
+                  child: Html(
+                    data: sesion.evento.descripcion,
+                    defaultTextStyle: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "GoogleSans",
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeDarkLightColor),
+                  ),
+                ),
               )
             ],
           ),
@@ -160,7 +240,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 shape: RoundedRectangleBorder(
@@ -179,7 +259,7 @@ class DetalleSesion extends StatelessWidget {
                           fontFamily: "GoogleSans",
                           fontWeight: FontWeight.bold,
                           color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.left,
+                      textAlign: TextAlign.center,
                     )),
               )
             ],
@@ -206,7 +286,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 shape: RoundedRectangleBorder(
@@ -225,7 +305,7 @@ class DetalleSesion extends StatelessWidget {
                           fontFamily: "GoogleSans",
                           fontWeight: FontWeight.bold,
                           color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.left,
+                      textAlign: TextAlign.center,
                     )),
               )
             ],
@@ -252,28 +332,27 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10))),
-                elevation: 5.0,
-                color: Colors.white,
-                child: Container(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10))),
+                  elevation: 5.0,
+                  color: Colors.white,
+                  child: Container(
                     alignment: Alignment.center,
                     margin: EdgeInsets.all(10),
-                    child: Text(
-                      sesion.evento.materialAlumno,
-                      style: TextStyle(
-                          fontSize: 20,
+                    child: Html(
+                      data: sesion.evento.materialAlumno,
+                      defaultTextStyle: TextStyle(
+                          fontSize: 15,
                           fontFamily: "GoogleSans",
                           fontWeight: FontWeight.bold,
                           color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.left,
-                    )),
-              )
+                    ),
+                  ))
             ],
           ),
         ));
@@ -298,7 +377,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                   shape: RoundedRectangleBorder(
@@ -317,7 +396,7 @@ class DetalleSesion extends StatelessWidget {
                             fontFamily: "GoogleSans",
                             fontWeight: FontWeight.bold,
                             color: AppColors.verdeDarkLightColor),
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                       )))
             ],
           ),
@@ -343,7 +422,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 shape: RoundedRectangleBorder(
@@ -362,7 +441,7 @@ class DetalleSesion extends StatelessWidget {
                           fontFamily: "GoogleSans",
                           fontWeight: FontWeight.bold,
                           color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.left,
+                      textAlign: TextAlign.center,
                     )),
               )
             ],
@@ -389,7 +468,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 shape: RoundedRectangleBorder(
@@ -402,14 +481,13 @@ class DetalleSesion extends StatelessWidget {
                     margin: EdgeInsets.all(10),
                     child: Container(
                       alignment: Alignment.center,
-                      child: Text(
-                        sesion.espacio.espacio,
-                        style: TextStyle(
-                            fontSize: 20,
+                      child: Html(
+                        data: sesion.espacio.espacio,
+                        defaultTextStyle: TextStyle(
+                            fontSize: 15,
                             fontFamily: "GoogleSans",
                             fontWeight: FontWeight.bold,
                             color: AppColors.verdeDarkLightColor),
-                        textAlign: TextAlign.center,
                       ),
                     )),
               )
@@ -437,7 +515,7 @@ class DetalleSesion extends StatelessWidget {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
               Material(
                 shape: RoundedRectangleBorder(
@@ -449,14 +527,13 @@ class DetalleSesion extends StatelessWidget {
                 child: Container(
                     alignment: Alignment.center,
                     margin: EdgeInsets.all(10),
-                    child: Text(
-                      sesion.espacio.descripcion,
-                      style: TextStyle(
-                          fontSize: 20,
+                    child: Html(
+                      data: sesion.espacio.descripcion,
+                      defaultTextStyle: TextStyle(
+                          fontSize: 15,
                           fontFamily: "GoogleSans",
                           fontWeight: FontWeight.bold,
                           color: AppColors.verdeDarkLightColor),
-                      textAlign: TextAlign.left,
                     )),
               )
             ],
@@ -498,13 +575,14 @@ class DetalleSesion extends StatelessWidget {
                   SizedBox(
                     height: 5.0,
                   ),
-                  Text(
-                    sesion.ponente.biografia,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.grisObscuro,
-                      fontSize: 15.0,
-                      fontFamily: "GoogleSans",
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: Html(
+                      data: sesion.ponente.biografia,
+                      defaultTextStyle: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "GoogleSans",
+                          color: AppColors.grisObscuro),
                     ),
                   ),
                   Padding(
@@ -530,5 +608,154 @@ class DetalleSesion extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _getSharedPreferences() async {
+    nombre = await sharedPreferences.getNombre();
+    noControl = await sharedPreferences.getNoControl();
+  }
+
+  _onError(BuildContext context, String texto) {
+    return Material(
+        color: Colors.transparent,
+        child: Stack(alignment: Alignment.center, children: <Widget>[
+          Container(
+              width: 300,
+              height: 250,
+              margin: EdgeInsets.all(50),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                  shape: BoxShape.rectangle,
+                  image: new DecorationImage(
+                      image: new AssetImage("assets/images/fondo.png"),
+                      fit: BoxFit.none,
+                      repeat: ImageRepeat.repeat),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 15.0,
+                        offset: Offset(0.0, 7.0))
+                  ]),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage('assets/images/sad.png'),
+                    )),
+                  ),
+                  Container(
+                      margin: EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        elevation: 5.0,
+                        color: Colors.white,
+                        child: Container(
+                            margin: EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            child: Text(
+                              texto,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "GoogleSans",
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.azulMarino),
+                              textAlign: TextAlign.center,
+                            )),
+                      ))
+                ],
+              )),
+          Align(
+            alignment: Alignment.topRight,
+            child: RaisedButton.icon(
+                color: AppColors.azulMarino,
+                textColor: Colors.white,
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
+                label: Text('Cerrar')),
+          )
+        ]));
+  }
+
+  _onLoading(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        ColorLoader3(
+          radius: 20,
+          dotRadius: 8,
+        )
+      ],
+    );
+  }
+
+  void _Inscribir(BuildContext context) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server = "${Strings.server}api/movil/sesion/inscripcion";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.post(Uri.encodeFull(server),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          body: jsonEncode(
+              {"idUsuario": noControl, "idSesion": sesion.idSesion}));
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        if (data['inscripcion'].toString() == '5') _onSuccessWeb(data, context);
+        if (data['inscripcion'].toString() == '4')
+          _onError(context, "Ya cuentas con el máximo de actividades  😰");
+        if (data['inscripcion'].toString() == '3')
+          _onError(context, "Ya cuentas con el máximo de actividades 😰");
+        if (data['inscripcion'].toString() == '2')
+          _onError(context,
+              "Ya cuentas con el máximo de actidades de tu carrera 😰");
+        if (data['inscripcion'].toString() == '1')
+          _onError(context, "Esta sesión se cruza con otra actividad 😰");
+      }
+    }
+
+    getData();
+  }
+
+  void _Eliminar(BuildContext context) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server =
+        "${Strings.server}api/movil/sesion/inscripcion/${noControl}/${sesion.idSesion}";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.delete(
+        Uri.encodeFull(server),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json"
+        },
+      );
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessWeb(data, context);
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessWeb(data, context) async {
+    Navigator.pushAndRemoveUntil(
+        context, MaterialPageRoute(builder: (context) => Principal()),
+        ModalRoute.withName('/principal'));
   }
 }

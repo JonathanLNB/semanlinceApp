@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Adaptadores/SesionAdapter.dart';
+import 'package:semana_lince/Herramientas/Progress.dart';
+import 'package:semana_lince/Herramientas/SharedPreferences.dart';
 import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Principal/navigation_bar.dart';
@@ -9,12 +11,33 @@ import 'package:semana_lince/TDA/Espacio.dart';
 import 'package:semana_lince/TDA/Evento.dart';
 import 'package:semana_lince/TDA/Ponente.dart';
 import 'package:semana_lince/TDA/Sesion.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class MostrarSesiones extends StatelessWidget {
-  List<Sesion> lista = [
-    new Sesion(1, new Evento.setSesion(1, "Hackaton", "Libreta", "Descubriremos muchas cosas", 2, 3), new Espacio(1, "Centro para las artes", "Ubicado en campus 2", 10), new Ponente.sinEncargado(1, "Juan Patricio", "Inge egresado", "url"), 1,
-        "10:30", "17:04"),
-  ];
+class MostrarSesiones extends StatefulWidget {
+  int idEvento;
+
+  MostrarSesiones(this.idEvento);
+
+  State<StatefulWidget> createState() => new _MostrarSesiones(idEvento);
+}
+
+class _MostrarSesiones extends State<MostrarSesiones> {
+  SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
+  String noControl;
+
+  List<Sesion> sesiones = [];
+  int idEvento;
+
+  _MostrarSesiones(this.idEvento);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getSharedPreferences(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +53,17 @@ class MostrarSesiones extends StatelessWidget {
                 repeat: ImageRepeat.repeat),
           ),
         ),
-        ListView.builder(
-          padding: EdgeInsets.only(left: 10, top: 120),
-          itemBuilder: (context, index) {
-            Sesion aux = lista[index];
-            return SesionAdapter(aux);
-          },
-          scrollDirection: Axis.vertical,
-          itemCount: lista.length,
+        Container(
+          alignment: Alignment.center,
+          child: ListView.builder(
+            padding: EdgeInsets.only(left: 10, top: 120),
+            itemBuilder: (context, index) {
+              Sesion aux = sesiones[index];
+              return SesionAdapter(aux);
+            },
+            scrollDirection: Axis.vertical,
+            itemCount: sesiones.length,
+          ),
         ),
         NavigationBar(false),
         Padding(
@@ -55,5 +81,80 @@ class MostrarSesiones extends StatelessWidget {
         ),
       ],
     ));
+  }
+
+  _getSharedPreferences(BuildContext context) async {
+    noControl = await sharedPreferences.getNoControl();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => _onLoading(context));
+    _Eventos(context);
+  }
+
+  _onLoading(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        ColorLoader3(
+          radius: 20,
+          dotRadius: 8,
+        )
+      ],
+    );
+  }
+
+  void _Eventos(BuildContext context) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server =
+        "${Strings.server}api/movil/sesion/${idEvento}/${noControl}";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.get(Uri.encodeFull(server), headers: {
+        "content-type": "application/json",
+        "accept": "application/json"
+      });
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessWeb(data);
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessWeb(data) async {
+    Navigator.pop(context);
+    List sesionesAux = data["sesiones"];
+    List<Sesion> listaAux = [];
+    if (sesionesAux != null) {
+      for (int i = 0; i < sesionesAux.length; i++) {
+        listaAux.add(
+          new Sesion(
+              sesionesAux[i]["idsesion"],
+              new Evento.setSesion(
+                  sesionesAux[i]["evento"],
+                  sesionesAux[i]["material_alumno"],
+                  sesionesAux[i]["descripcion"],
+                  sesionesAux[i]["idcategoria"],
+                  sesionesAux[i]["idtipoe"]),
+              new Espacio(sesionesAux[i]["idespacio"],
+                  sesionesAux[i]["espacio"], sesionesAux[i]["espaciodesc"], 0),
+              new Ponente.sinEncargado(
+                  sesionesAux[i]["idponente"],
+                  sesionesAux[i]["ponente"],
+                  sesionesAux[i]["biografia"],
+                  sesionesAux[i]["imagen"]),
+              sesionesAux[i]["idfecha"],
+              sesionesAux[i]["horainicio"],
+              sesionesAux[i]["horafinal"],
+              false),
+        );
+        setState(() {
+          sesiones = listaAux;
+        });
+      }
+    }
   }
 }
