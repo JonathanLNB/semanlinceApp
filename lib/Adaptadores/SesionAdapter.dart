@@ -97,8 +97,8 @@ class SesionAdapter extends StatelessWidget {
   Container cardFecha(BuildContext context) {
     return Container(
       height: 140.0,
-      width: 200.0,
-      margin: EdgeInsets.only(top: 105, left: 70.0),
+      width: 300.0,
+      margin: EdgeInsets.only(top: 105, left: 40.0, right: 50),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -109,14 +109,16 @@ class SesionAdapter extends StatelessWidget {
         ],
       ),
       child: (Container(
+        alignment: Alignment.center,
           margin: EdgeInsets.only(left: 5, top: 40, right: 5),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(left: 15),
+                    padding: EdgeInsets.only(left: 50),
                   ),
                   Container(
                     height: 40,
@@ -130,7 +132,7 @@ class SesionAdapter extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30),
+                    padding: EdgeInsets.only(left: 20),
                   ),
                   Container(
                     height: 40,
@@ -149,26 +151,26 @@ class SesionAdapter extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(left: 2),
+                    padding: EdgeInsets.only(left: 40),
                   ),
                   Text(
                     Herramientas.getFecha(sesion.idFecha),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: AppColors.verdeDarkColor,
-                        fontSize: 18.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                         fontFamily: "GoogleSans"),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30),
+                    padding: EdgeInsets.only(left: 20),
                   ),
                   Text(
                     sesion.horaInicio,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: AppColors.verdeDarkColor,
-                        fontSize: 18.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                         fontFamily: "GoogleSans"),
                   )

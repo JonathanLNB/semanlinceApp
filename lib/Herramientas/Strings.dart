@@ -13,5 +13,5 @@ class Strings {
   static String descripcionLugar = "Descripción del lugar";
   static String usuario = "b25061eca98c6175dbf9ae72e853712e";
   static String contrasena = "0e5d57bb1ee50c8df51d4042e8cd4919";
-  static String server = "http://192.168.1.69:3000/";
+  static String server = "http://192.168.43.113:3000/";
 }

@@ -3,13 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesTest {
   Future<String> getNombre() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("nombre") ?? 'name';
+    return prefs.getString("nombre") ?? '';
   }
 
   Future<bool> setNombre(String nombre) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setString("nombre", nombre);
+    prefs.setString("nombre", nombre);
+    return prefs.commit();
   }
 
   Future<String> getNoControl() async {
@@ -19,8 +19,8 @@ class SharedPreferencesTest {
 
   Future<bool> setNoControl(String nombre) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setString("noControl", nombre);
+    prefs.setString("noControl", nombre);
+    return prefs.commit();
   }
 
   Future<int> getIdCarrera() async {
@@ -30,8 +30,8 @@ class SharedPreferencesTest {
 
   Future<bool> setIdCarrera(int carrera) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setInt("idCarrera", carrera);
+    prefs.setInt("idCarrera", carrera);
+    return prefs.commit();
   }
 
   Future<int> getIdEncargado() async {
@@ -41,8 +41,8 @@ class SharedPreferencesTest {
 
   Future<bool> setIdEncargado(int encargado) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setInt("idEncargado", encargado);
+    prefs.setInt("idEncargado", encargado);
+    return prefs.commit();
   }
 
   Future<int> getSemestre() async {
@@ -52,8 +52,8 @@ class SharedPreferencesTest {
 
   Future<bool> setSemestre(int semestre) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setInt("semestre", semestre);
+    prefs.setInt("semestre", semestre);
+    return prefs.commit();
   }
 
   Future<String> getFoto() async {
@@ -63,7 +63,7 @@ class SharedPreferencesTest {
 
   Future<bool> setFoto(String foto) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.setString("foto", foto);
+    prefs.setString("foto", foto);
+    return prefs.commit();
   }
 }

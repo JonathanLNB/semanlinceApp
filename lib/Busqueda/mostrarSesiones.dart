@@ -53,6 +53,7 @@ class _MostrarSesiones extends State<MostrarSesiones> {
                 repeat: ImageRepeat.repeat),
           ),
         ),
+        sesiones.length>0?
         Container(
           alignment: Alignment.center,
           child: ListView.builder(
@@ -64,7 +65,8 @@ class _MostrarSesiones extends State<MostrarSesiones> {
             scrollDirection: Axis.vertical,
             itemCount: sesiones.length,
           ),
-        ),
+        ):
+        getSad(),
         NavigationBar(false),
         Padding(
           padding: Platform.isAndroid
@@ -156,5 +158,41 @@ class _MostrarSesiones extends State<MostrarSesiones> {
         });
       }
     }
+  }
+
+  Column getSad() {
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 200, bottom: 20),
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage('assets/images/sad.png'),
+          )),
+        ),
+        Container(
+            margin: EdgeInsets.only(bottom: 70),
+            alignment: Alignment.center,
+            child: Material(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              elevation: 5.0,
+              color: Colors.white,
+              child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Text(
+                    "Este evento no tiene sesiones disponibles",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "GoogleSans",
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeDarkColor),
+                    textAlign: TextAlign.center,
+                  )),
+            )),
+      ],
+    );
   }
 }

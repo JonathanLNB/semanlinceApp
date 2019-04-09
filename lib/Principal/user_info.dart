@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
+import 'package:semana_lince/SignIn.dart';
 import 'package:semana_lince/TDA/Persona.dart';
 
 class UserInfoM extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   Persona persona;
-
   UserInfoM(this.persona);
 
   @override
@@ -111,7 +115,7 @@ class UserInfoM extends StatelessWidget {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                print("Cerrar Sesión");
+                                cerrarSesion(context);
                               },
                               child: Container(
                                 height: 44,
@@ -182,5 +186,14 @@ class UserInfoM extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void cerrarSesion(BuildContext context) async {
+    _googleSignIn.signOut();
+    _auth.signOut();
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+        ModalRoute.withName('/signIn'));
   }
 }

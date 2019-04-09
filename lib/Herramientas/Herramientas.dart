@@ -70,6 +70,8 @@ class Herramientas {
 
   static String getCarrera(int idCarrera) {
     switch (idCarrera) {
+      case 0:
+        return "Cargando...";
       case 1:
         return "Ingeniería Ambiental";
       case 2:

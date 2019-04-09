@@ -207,7 +207,9 @@ class DetalleSesion extends StatelessWidget {
                   alignment: Alignment.center,
                   margin: EdgeInsets.all(10),
                   child: Html(
-                    data: sesion.evento.descripcion,
+                    data: sesion.evento.descripcion != null
+                        ? sesion.evento.descripcion
+                        : '',
                     defaultTextStyle: TextStyle(
                         fontSize: 15,
                         fontFamily: "GoogleSans",
@@ -345,7 +347,9 @@ class DetalleSesion extends StatelessWidget {
                     alignment: Alignment.center,
                     margin: EdgeInsets.all(10),
                     child: Html(
-                      data: sesion.evento.materialAlumno,
+                      data: sesion.evento.materialAlumno != null
+                          ? sesion.evento.materialAlumno
+                          : '',
                       defaultTextStyle: TextStyle(
                           fontSize: 15,
                           fontFamily: "GoogleSans",
@@ -528,7 +532,9 @@ class DetalleSesion extends StatelessWidget {
                     alignment: Alignment.center,
                     margin: EdgeInsets.all(10),
                     child: Html(
-                      data: sesion.espacio.descripcion,
+                      data: sesion.espacio.descripcion != null
+                          ? sesion.espacio.descripcion
+                          : '',
                       defaultTextStyle: TextStyle(
                           fontSize: 15,
                           fontFamily: "GoogleSans",
@@ -578,7 +584,9 @@ class DetalleSesion extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.all(10),
                     child: Html(
-                      data: sesion.ponente.biografia,
+                      data: sesion.ponente.biografia != null
+                          ? sesion.ponente.biografia
+                          : '',
                       defaultTextStyle: TextStyle(
                           fontSize: 14,
                           fontFamily: "GoogleSans",
@@ -621,7 +629,7 @@ class DetalleSesion extends StatelessWidget {
         child: Stack(alignment: Alignment.center, children: <Widget>[
           Container(
               width: 300,
-              height: 250,
+              height: 280,
               margin: EdgeInsets.all(50),
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -677,7 +685,11 @@ class DetalleSesion extends StatelessWidget {
             child: RaisedButton.icon(
                 color: AppColors.azulMarino,
                 textColor: Colors.white,
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
                 icon: Icon(
                   Icons.close,
                   color: Colors.white,
@@ -716,14 +728,29 @@ class DetalleSesion extends StatelessWidget {
       if (data['valid'].toString() == '1') {
         if (data['inscripcion'].toString() == '5') _onSuccessWeb(data, context);
         if (data['inscripcion'].toString() == '4')
-          _onError(context, "Ya cuentas con el máximo de actividades  😰");
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _onError(
+                  context, "Ya cuentas con el máximo de actividades  😰"));
         if (data['inscripcion'].toString() == '3')
-          _onError(context, "Ya cuentas con el máximo de actividades 😰");
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _onError(
+                  context, "Ya cuentas con el máximo de actividades 😰"));
         if (data['inscripcion'].toString() == '2')
-          _onError(context,
-              "Ya cuentas con el máximo de actidades de tu carrera 😰");
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _onError(context,
+                  "Ya cuentas con el máximo de actidades de tu carrera 😰"));
         if (data['inscripcion'].toString() == '1')
-          _onError(context, "Esta sesión se cruza con otra actividad 😰");
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _onError(
+                  context, "Esta sesión se cruza con otra actividad 😰"));
       }
     }
 
@@ -755,7 +782,8 @@ class DetalleSesion extends StatelessWidget {
 
   _onSuccessWeb(data, context) async {
     Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => Principal()),
+        context,
+        MaterialPageRoute(builder: (context) => Principal()),
         ModalRoute.withName('/principal'));
   }
 }

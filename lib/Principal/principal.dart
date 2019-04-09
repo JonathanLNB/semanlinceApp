@@ -45,7 +45,7 @@ class _Principal extends State<Principal> {
   int semestreAux = 0;
 
   @override
-  void initState() {
+  Future initState() {
     // TODO: implement initState
     super.initState();
     getUser().then((user) {
@@ -56,11 +56,8 @@ class _Principal extends State<Principal> {
             ModalRoute.withName('/signIn'));
       }
     });
-    _getSharedPreferences();
+    _cargar();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +166,7 @@ class _Principal extends State<Principal> {
                         fontFamily: "GoogleSans",
                         fontWeight: FontWeight.bold,
                         color: AppColors.verdeDarkColor),
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                   )),
             )),
       ],
@@ -195,6 +192,10 @@ class _Principal extends State<Principal> {
   void cerrarSesion() async {
     _googleSignIn.signOut();
     _auth.signOut();
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+        ModalRoute.withName('/signIn'));
   }
 
   _getSharedPreferences() async {
@@ -205,18 +206,45 @@ class _Principal extends State<Principal> {
     semestreAux = await sharedPreferences.getSemestre();
     idEncargadoAux = await sharedPreferences.getIdEncargado();
     setState(() {
-      idCarrera = idCarreraAux;
-      nombre = nombreAux;
-      foto = fotoAux;
-      noControl = noControlAux;
+      if (nombreAux.length > 0)
+        nombre = nombreAux;
+      else {
+        getUser().then((user) {
+          if (user != null) {
+            nombre = user.displayName;
+          }
+        });
+      }
+      if (fotoAux.length > 0)
+        foto = fotoAux;
+      else {
+        getUser().then((user) {
+          if (user != null) {
+            foto = user.photoUrl;
+          }
+        });
+      }
+      if (noControlAux.length > 0) {
+        noControl = noControlAux;
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => _onLoading(context));
+        _MisActividades();
+      } else {
+        getUser().then((user) {
+          if (user != null) {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _onLoading(context));
+            consumirDatos(user.email.split("@")[0]);
+          }
+        });
+      }
       semestre = semestreAux;
       idEncargado = idEncargadoAux;
     });
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => _onLoading(context));
-    _MisActividades();
   }
 
   void _MisActividades() {
@@ -268,5 +296,54 @@ class _Principal extends State<Principal> {
         });
       }
     }
+  }
+
+  void consumirDatos(String correo) {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server = "${Strings.server}api/usuario";
+    print(server);
+    Future<String> getData() async {
+      http.Response response = await http.post(Uri.encodeFull(server),
+          headers: {
+            "content-type": "application/json",
+          },
+          body: jsonEncode({"idUsuario": correo, "token": "1"}));
+      print(response.body);
+      Map<String, dynamic> data = jsonDecode(response.body);
+      if (data['valid'].toString() == '1') {
+        _onSuccessAlumnoWeb(data);
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessAlumnoWeb(data) async {
+    Navigator.pop(context);
+    if (data['alumno'] != null) {
+      setState(() {
+        idCarrera = data['alumno']['idcarrera'];
+        nombre = data['alumno']['nombre'];
+        noControl = data['alumno']['idusuario'];
+        semestre = data['alumno']['semestre'];
+        idEncargado = data['alumno']['idencargado'];
+        sharedPreferences.setIdCarrera(idCarrera);
+        sharedPreferences.setNombre(nombre);
+        sharedPreferences.setNoControl(noControl);
+        sharedPreferences.setSemestre(semestre);
+        sharedPreferences.setIdEncargado(idEncargado);
+        sharedPreferences.setFoto(foto);
+      });
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _onLoading(context));
+      _MisActividades();
+    }
+  }
+
+  void _cargar() async {
+    await _getSharedPreferences();
   }
 }

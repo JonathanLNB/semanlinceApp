@@ -32,7 +32,10 @@ class _SignIn extends State<SignIn> {
     super.initState();
     getUser().then((user) {
       if (user != null) {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Principal()), ModalRoute.withName('/principal'));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Principal()),
+            ModalRoute.withName('/principal'));
       }
     });
   }
@@ -185,10 +188,17 @@ class _SignIn extends State<SignIn> {
       _success = true;
       _userID = user.uid;
       if (currentUser.email.contains("itcelaya.edu")) {
-        showDialog(context: context,barrierDismissible: false, builder: (context) => _onSuccess(context),);
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _onSuccess(context),
+        );
         consumirDatos(currentUser.email.split("@")[0]);
       } else {
-        showDialog(context: context, builder: (context) => _onError(context, "Esa no es tu cuenta institucional"));
+        showDialog(
+            context: context,
+            builder: (context) =>
+                _onError(context, "Esa no es tu cuenta institucional"));
         cerrarSesion();
       }
       foto = currentUser.photoUrl;
@@ -224,7 +234,7 @@ class _SignIn extends State<SignIn> {
         child: Stack(alignment: Alignment.center, children: <Widget>[
           Container(
               width: 300,
-              height: 250,
+              height: 280,
               margin: EdgeInsets.all(50),
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -298,8 +308,7 @@ class _SignIn extends State<SignIn> {
     Future<String> getData() async {
       http.Response response = await http.post(Uri.encodeFull(server),
           headers: {
-            "content-type": "application/json",
-            "accept": "application/json"
+            "content-type": "application/json"
           },
           body: jsonEncode({"idUsuario": correo, "token": "1"}));
       print(response.body);
@@ -313,7 +322,7 @@ class _SignIn extends State<SignIn> {
   }
 
   _onSuccessWeb(data) async {
-    if(data['alumno'] != null) {
+    if (data['alumno'] != null) {
       sharedPreferences.setIdCarrera(data['alumno']['idcarrera']);
       sharedPreferences.setNombre(data['alumno']['nombre']);
       sharedPreferences.setNoControl(data['alumno']['idusuario']);
@@ -321,15 +330,15 @@ class _SignIn extends State<SignIn> {
       sharedPreferences.setIdEncargado(data['alumno']['idencargado']);
       sharedPreferences.setFoto(foto);
       Navigator.pushAndRemoveUntil(
-          context, MaterialPageRoute(builder: (context) => Principal()),
+          context,
+          MaterialPageRoute(builder: (context) => Principal()),
           ModalRoute.withName('/principal'));
-    }
-    else {
-      showDialog(context: context,
+    } else {
+      showDialog(
+          context: context,
           builder: (context) =>
               _onError(context, "Esta cuenta no esta registrada"));
       cerrarSesion();
     }
   }
-
 }
