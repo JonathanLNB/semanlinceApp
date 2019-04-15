@@ -34,7 +34,7 @@ class _Principal extends State<Principal> {
   String nombre = "";
   String noControl = "";
   String foto = "";
-  int idCarrera = 9;
+  int idCarrera = 0;
   int idEncargado = 1;
   int semestre = 0;
   String nombreAux = "";
@@ -118,7 +118,7 @@ class _Principal extends State<Principal> {
           child: new Align(
             alignment: Alignment.bottomRight,
             child: new FloatingActionButton(
-              backgroundColor: AppColors.verdeDarkColor,
+              backgroundColor: AppColors.verdeDarkLightColor,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -127,7 +127,7 @@ class _Principal extends State<Principal> {
               },
               tooltip: 'Buscar',
               child: new Icon(
-                Icons.search,
+                Icons.add,
                 size: 25,
               ),
             ),
@@ -137,39 +137,47 @@ class _Principal extends State<Principal> {
     );
   }
 
-  Column getSad() {
-    return Column(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(top: 60, bottom: 20),
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image: AssetImage('assets/images/sad.png'),
-          )),
-        ),
-        Container(
-            margin: EdgeInsets.only(bottom: 70),
-            alignment: Alignment.center,
-            child: Material(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              elevation: 5.0,
-              color: Colors.white,
-              child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: Text(
-                    "Aún no tienes actividades inscritas",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: "GoogleSans",
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.verdeDarkColor),
-                    textAlign: TextAlign.center,
-                  )),
+  GestureDetector getSad() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => MostrarCategoria()));
+      },
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 60, bottom: 20),
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+              image: AssetImage('assets/images/sad.png'),
             )),
-      ],
+          ),
+          Container(
+              margin: EdgeInsets.only(bottom: 70),
+              alignment: Alignment.center,
+              child: Material(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                elevation: 5.0,
+                color: Colors.white,
+                child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Text(
+                      "Aún no tienes actividades inscritas",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "GoogleSans",
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.verdeDarkColor),
+                      textAlign: TextAlign.center,
+                    )),
+              )),
+        ],
+      ),
     );
   }
 
@@ -206,6 +214,7 @@ class _Principal extends State<Principal> {
     semestreAux = await sharedPreferences.getSemestre();
     idEncargadoAux = await sharedPreferences.getIdEncargado();
     setState(() {
+      if (idCarreraAux > 0) idCarrera = idCarreraAux;
       if (nombreAux.length > 0)
         nombre = nombreAux;
       else {
@@ -251,19 +260,57 @@ class _Principal extends State<Principal> {
     String basicAuth = 'Basic ' +
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server = "${Strings.server}api/movil/sesion/${noControl}";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.get(Uri.encodeFull(server), headers: {
-        "content-type": "application/json",
-        "accept": "application/json"
-      });
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data);
+      try {
+        http.Response response = await http.get(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            });
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
     getData();
+  }
+
+  void _Configuracion() {
+    String basicAuth = 'Basic ' +
+        base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
+    String server = "${Strings.server}api/configuracion";
+    Future<String> getData() async {
+      try {
+        http.Response response = await http.get(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            });
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessConfig(data);
+        }
+      } catch (e) {
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
+      }
+    }
+
+    getData();
+  }
+
+  _onSuccessConfig(data) async {
+    setState(() {
+      sharedPreferences.setInscribir(data['aprovado']);
+    });
   }
 
   _onSuccessWeb(data) async {
@@ -304,15 +351,22 @@ class _Principal extends State<Principal> {
     String server = "${Strings.server}api/usuario";
     print(server);
     Future<String> getData() async {
-      http.Response response = await http.post(Uri.encodeFull(server),
-          headers: {
-            "content-type": "application/json",
-          },
-          body: jsonEncode({"idUsuario": correo, "token": "1"}));
-      print(response.body);
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessAlumnoWeb(data);
+      try {
+        http.Response response = await http.post(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+            },
+            body: jsonEncode({"idUsuario": correo, "token": "1"}));
+        print(response.body);
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessAlumnoWeb(data);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
@@ -345,5 +399,6 @@ class _Principal extends State<Principal> {
 
   void _cargar() async {
     await _getSharedPreferences();
+    _Configuracion();
   }
 }

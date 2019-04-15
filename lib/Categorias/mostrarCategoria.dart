@@ -37,7 +37,7 @@ class MostrarCategoria extends StatelessWidget {
           padding: EdgeInsets.only(top: 120),
           children: <Widget>[
             getBuscador(context),
-            ListaCategorias("Academica", 1),
+            ListaCategorias("Académica", 1),
             ListaCategorias("Arte y Cultura", 2),
             ListaCategorias("Deportivo", 3),
             ListaCategorias("Desarrollo Profesional", 4),
@@ -120,7 +120,7 @@ class MostrarCategoria extends StatelessWidget {
 
   _getSharedPreferences(BuildContext context) async {
     noControlAux = await sharedPreferences.getNoControl();
-    noControl =noControlAux;
+    noControl = noControlAux;
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -132,15 +132,22 @@ class MostrarCategoria extends StatelessWidget {
     String basicAuth = 'Basic ' +
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server = "${Strings.server}api/movil/eventos/all/${noControl}";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.get(Uri.encodeFull(server), headers: {
-        "content-type": "application/json",
-        "accept": "application/json"
-      });
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data, context);
+      try {
+        http.Response response = await http.get(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            });
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data, context);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
@@ -165,6 +172,6 @@ class MostrarCategoria extends StatelessWidget {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) => new MostrarEventos(eventosAux)));
+            builder: (BuildContext context) => new MostrarEventos(eventosAux, 0)));
   }
 }

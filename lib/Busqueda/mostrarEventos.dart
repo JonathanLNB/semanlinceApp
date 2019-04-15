@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:semana_lince/Adaptadores/EventoAdapter.dart';
+import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/Strings.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
 import 'package:semana_lince/Herramientas/lista_categorias.dart';
@@ -10,16 +11,20 @@ import 'package:semana_lince/TDA/Evento.dart';
 
 class MostrarEventos extends StatefulWidget {
   List<Evento> lista;
-  MostrarEventos(this.lista);
-  State<StatefulWidget> createState() => new _Buscador(lista);
+  int idCategoria;
+
+  MostrarEventos(this.lista, this.idCategoria);
+
+  State<StatefulWidget> createState() => new _Buscador(lista, idCategoria);
 }
 
 class _Buscador extends State<MostrarEventos> {
   List<Evento> lista;
   TextEditingController controller = new TextEditingController();
   String filter;
-
-  _Buscador(this.lista);
+  int idCategoria;
+  
+  _Buscador(this.lista, this.idCategoria);
 
   @override
   initState() {
@@ -50,24 +55,28 @@ class _Buscador extends State<MostrarEventos> {
                 repeat: ImageRepeat.repeat),
           ),
         ),
-        new ListView.builder(
-          padding: EdgeInsets.only(left: 30, top: 220),
-          itemCount: lista.length,
-          itemBuilder: (BuildContext context, int index) {
-            Evento evento = lista[index];
-            return filter == null || filter == ""
-                ? new Container(
-                    margin: EdgeInsets.only(top: 10, bottom: 10),
-                    child: EventoAdapter(evento),
-                  )
-                : evento.evento.toLowerCase().contains(filter.toLowerCase())
-                    ? Container(
-                        margin: EdgeInsets.only(top: 10, bottom: 10),
-                        child: EventoAdapter(evento),
-                      )
-                    : new Container();
-          },
-        ),
+        lista!=null
+            ? new ListView.builder(
+                padding: EdgeInsets.only(left: 30, top: 220),
+                itemCount: lista.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Evento evento = lista[index];
+                  return filter == null || filter == ""
+                      ? new Container(
+                          margin: EdgeInsets.only(top: 10, bottom: 10),
+                          child: EventoAdapter(evento),
+                        )
+                      : evento.evento
+                              .toLowerCase()
+                              .contains(filter.toLowerCase())
+                          ? Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              child: EventoAdapter(evento),
+                            )
+                          : new Container();
+                },
+              )
+            : getSad(),
         getBuscador(context),
         NavigationBar(false),
         Padding(
@@ -75,7 +84,7 @@ class _Buscador extends State<MostrarEventos> {
                 ? EdgeInsets.only(left: 20, top: 40, right: 10)
                 : EdgeInsets.only(left: 20, top: 50, right: 10),
             child: Text(
-              Strings.buscador,
+              Herramientas.getCategoria(idCategoria),
               style: TextStyle(
                   color: AppColors.colorAccent,
                   fontSize: 30.0,
@@ -118,6 +127,42 @@ class _Buscador extends State<MostrarEventos> {
           ),
         ),
       ),
+    );
+  }
+
+  Column getSad() {
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 200, bottom: 20),
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage('assets/images/sad.png'),
+          )),
+        ),
+        Container(
+            margin: EdgeInsets.only(bottom: 70),
+            alignment: Alignment.center,
+            child: Material(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              elevation: 5.0,
+              color: Colors.white,
+              child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Text(
+                    "Este evento no tiene sesiones disponibles",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "GoogleSans",
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeDarkColor),
+                    textAlign: TextAlign.center,
+                  )),
+            )),
+      ],
     );
   }
 }

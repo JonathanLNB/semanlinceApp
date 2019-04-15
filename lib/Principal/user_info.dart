@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:semana_lince/Herramientas/Herramientas.dart';
 import 'package:semana_lince/Herramientas/appColors.dart';
@@ -10,6 +11,7 @@ class UserInfoM extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   Persona persona;
+
   UserInfoM(this.persona);
 
   @override
@@ -144,9 +146,10 @@ class UserInfoM extends StatelessWidget {
                 elevation: 5.0,
                 shape: CircleBorder(),
                 child: CircleAvatar(
-                  radius: 40.0,
-                  backgroundImage: new NetworkImage(persona.foto),
-                ),
+                    radius: 40.0,
+                    backgroundImage: persona.foto.length > 0
+                        ? new NetworkImage(persona.foto)
+                        : NetworkImage('http://i.pravatar.cc/300')),
               ),
             ],
           ),
@@ -167,7 +170,9 @@ class UserInfoM extends StatelessWidget {
           child: ClipRRect(
             borderRadius: new BorderRadius.circular(8.0),
             child: Image.network(
-              "http://api.qrserver.com/v1/create-qr-code/?data="+persona.idUsuario+"&size=200x200&color=43835c&ecc=H&margin=20",
+              "http://api.qrserver.com/v1/create-qr-code/?data=" +
+                  persona.idUsuario +
+                  "&size=200x200&color=43835c&ecc=H&margin=20",
               fit: BoxFit.contain,
             ),
           ),
@@ -189,11 +194,42 @@ class UserInfoM extends StatelessWidget {
   }
 
   void cerrarSesion(BuildContext context) async {
-    _googleSignIn.signOut();
-    _auth.signOut();
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => SignIn()),
-        ModalRoute.withName('/signIn'));
+    showDialog(
+        context: context,
+        builder: (_) => AssetGiffyDialog(
+              image: Image.asset('assets/images/sad.gif', fit: BoxFit.cover),
+              title: Text(
+                'Confirmación 😱',
+                style: TextStyle(
+                    fontSize: 22,
+                    fontFamily: "GoogleSans",
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.verdeDarkLightColor),
+              ),
+              description: Text(
+                '¿${persona.nombre.split(" ")[2]} estás segur@ de cerrar tu sesión ?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: "GoogleSans",
+                    color: AppColors.azulMarino),
+              ),
+              buttonCancelText: Text(
+                "Cancelar",
+                style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+              ),
+              buttonOkText: Text(
+                "Aceptar",
+                style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+              ),
+              onOkButtonPressed: () {
+                _googleSignIn.signOut();
+                _auth.signOut();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignIn()),
+                    ModalRoute.withName('/signIn'));
+              },
+            ));
   }
 }

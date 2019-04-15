@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,14 +24,24 @@ class SignIn extends StatefulWidget {
 
 class _SignIn extends State<SignIn> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseMessaging firebase = new FirebaseMessaging();
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   SharedPreferencesTest sharedPreferences = new SharedPreferencesTest();
   bool _success;
-  String _userID, email, foto;
+  String _userID, token, email, foto;
+  int cont = 0;
 
   @override
   void initState() {
     super.initState();
+    firebase.configure(
+      onLaunch: (Map<String, dynamic> msg) {},
+      onResume: (Map<String, dynamic> msg) {},
+      onMessage: (Map<String, dynamic> msg) {},
+    );
+    firebase.getToken().then((token) {
+      update(token);
+    });
     getUser().then((user) {
       if (user != null) {
         Navigator.pushAndRemoveUntil(
@@ -80,12 +92,23 @@ class _SignIn extends State<SignIn> {
                           margin: EdgeInsets.all(10),
                           child: Column(
                             children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Image(
-                                  height: 150,
-                                  width: 150,
-                                  image: AssetImage("assets/images/logo.png"),
+                              GestureDetector(
+                                onTap: () {
+                                  cont += 1;
+                                  if (cont == 15) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => _Milos(context));
+                                    cont = 0;
+                                  }
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Image(
+                                    height: 150,
+                                    width: 150,
+                                    image: AssetImage("assets/images/logo.png"),
+                                  ),
                                 ),
                               ),
                               Text(
@@ -118,48 +141,55 @@ class _SignIn extends State<SignIn> {
                             ],
                           )),
                     )),
-                Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(top: 5),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Powered by: ",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "GoogleSans",
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.azulMarino),
-                          textAlign: TextAlign.right,
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => _Lynxes(context));
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(top: 5),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Powered by: ",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "GoogleSans",
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.azulMarino),
+                            textAlign: TextAlign.right,
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 10, right: 10),
-                        alignment: Alignment.center,
-                        child: Image(
-                          height: 100,
-                          width: 100,
-                          image: AssetImage("assets/images/lynxes.png"),
+                        Container(
+                          margin: EdgeInsets.only(top: 10, right: 10),
+                          alignment: Alignment.center,
+                          child: Image(
+                            height: 100,
+                            width: 100,
+                            image: AssetImage("assets/images/lynxes.png"),
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Club de Programación",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: "GoogleSans",
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.azulMarino),
-                          textAlign: TextAlign.right,
-                        ),
-                      )
-                    ],
+                        Container(
+                          margin: EdgeInsets.only(),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Club de Programación",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: "GoogleSans",
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.azulMarino),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )
+                ),
               ],
             )
           ],
@@ -195,11 +225,11 @@ class _SignIn extends State<SignIn> {
         );
         consumirDatos(currentUser.email.split("@")[0]);
       } else {
+        cerrarSesion();
         showDialog(
             context: context,
             builder: (context) =>
                 _onError(context, "Esa no es tu cuenta institucional"));
-        cerrarSesion();
       }
       foto = currentUser.photoUrl;
     } else {
@@ -228,93 +258,148 @@ class _SignIn extends State<SignIn> {
     );
   }
 
+  _Lynxes(BuildContext context) {
+    return AssetGiffyDialog(
+      image: Image.asset(
+        'assets/images/hello.gif',
+        fit: BoxFit.cover,
+      ),
+      title: Text(
+        'Lynxes es un grupo estudiantil formado por alumnos de la carrera de Ingeniería en sistemas computacionales, nos enfocamos en soluciones de software, asesorías de programación y reparación de computadoras. 👨‍💻\n\nNos pueden encontrar en la parte superior de cafetería 3 en campus 2, estamos para ayudarlos. 😉',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 9,
+            fontFamily: "GoogleSans",
+            color: AppColors.azulMarino),
+      ),
+      onlyOkButton: true,
+      buttonOkText: Text(
+        "Aceptar",
+        style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+      ),
+      onOkButtonPressed: () {
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (context) => _Gracias(context));
+      },
+    );
+  }
+  _Gracias(BuildContext context) {
+    return AssetGiffyDialog(
+      image: Image.asset(
+        'assets/images/gracias.gif',
+        fit: BoxFit.cover,
+      ),
+      title: Text(
+        'Queremos agradecer a Santiago Arturo Alvarado Alva y a Reyna Stephania Vera Carrizal por compartir sus fotos de algunos eventos representativos del TecNM en Celaya, además a todos aquellos que nos apoyaron con las pruebas para la corrección de errores y en especial al profesor Francisco Gutiérrez Verá quien fue el encargado del desarrollo.\n\nEsperamos que la aplicación sea de su agrado ya que es una app de estudiantes para estudiantes. 😉',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 8,
+            fontFamily: "GoogleSans",
+            color: AppColors.azulMarino),
+      ),
+      onlyOkButton: true,
+      buttonOkText: Text(
+        "Aceptar",
+        style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+      ),
+      onOkButtonPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  _Milos(BuildContext context) {
+    return AssetGiffyDialog(
+      image: Image.asset(
+        'assets/images/milos.gif',
+        fit: BoxFit.cover,
+      ),
+      title: Text(
+        '¿Khe haces aki?',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 35,
+            fontFamily: "GoogleSans",
+            color: AppColors.verdeDarkLightColor),
+      ),
+      description: Text(
+        '@JonathanLNB',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 15,
+            fontFamily: "GoogleSans",
+            color: AppColors.azulMarino),
+      ),
+      onlyOkButton: true,
+      buttonOkText: Text(
+        "Aceptar",
+        style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+      ),
+      onOkButtonPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
   _onError(BuildContext context, String texto) {
-    return Material(
-        color: Colors.transparent,
-        child: Stack(alignment: Alignment.center, children: <Widget>[
-          Container(
-              width: 300,
-              height: 280,
-              margin: EdgeInsets.all(50),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                  shape: BoxShape.rectangle,
-                  image: new DecorationImage(
-                      image: new AssetImage("assets/images/fondo.png"),
-                      fit: BoxFit.none,
-                      repeat: ImageRepeat.repeat),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 15.0,
-                        offset: Offset(0.0, 7.0))
-                  ]),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage('assets/images/sad.png'),
-                    )),
-                  ),
-                  Container(
-                      margin: EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      child: Material(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        elevation: 5.0,
-                        color: Colors.white,
-                        child: Container(
-                            margin: EdgeInsets.all(10),
-                            alignment: Alignment.center,
-                            child: Text(
-                              texto,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: "GoogleSans",
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.azulMarino),
-                              textAlign: TextAlign.center,
-                            )),
-                      ))
-                ],
-              )),
-          Align(
-            alignment: Alignment.topRight,
-            child: RaisedButton.icon(
-                color: AppColors.azulMarino,
-                textColor: Colors.white,
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                ),
-                label: Text('Cerrar')),
-          )
-        ]));
+    return AssetGiffyDialog(
+      image: Image.asset(
+        'assets/images/errorf.gif',
+        fit: BoxFit.cover,
+      ),
+      title: Text(
+        'Error 😱',
+        style: TextStyle(
+            fontSize: 22,
+            fontFamily: "GoogleSans",
+            fontWeight: FontWeight.bold,
+            color: AppColors.verdeDarkLightColor),
+      ),
+      description: Text(
+        texto,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 15,
+            fontFamily: "GoogleSans",
+            color: AppColors.azulMarino),
+      ),
+      onlyOkButton: true,
+      buttonOkText: Text(
+        "Aceptar",
+        style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+      ),
+      onOkButtonPressed: () {
+        Navigator.pop(context);
+      },
+    );
   }
 
   void consumirDatos(String correo) {
     String basicAuth = 'Basic ' +
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server = "${Strings.server}api/usuario";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.post(Uri.encodeFull(server),
-          headers: {
-            "content-type": "application/json"
-          },
-          body: jsonEncode({"idUsuario": correo, "token": "1"}));
-      print(response.body);
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data);
+      try {
+        http.Response response = await http.post(Uri.encodeFull(server),
+            headers: {"content-type": "application/json"},
+            body: jsonEncode({"idUsuario": correo, "token": token}));
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data);
+        } else {
+          Navigator.pop(context);
+          showDialog(
+              context: context,
+              builder: (context) => _onError(
+                  context, Strings.errorS));
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text(Strings.errorS,
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
@@ -337,8 +422,13 @@ class _SignIn extends State<SignIn> {
       showDialog(
           context: context,
           builder: (context) =>
-              _onError(context, "Esta cuenta no esta registrada"));
+              _onError(context, Strings.errorC));
       cerrarSesion();
     }
+  }
+
+  void update(String token) {
+     this.token = token;
+     print(token);
   }
 }

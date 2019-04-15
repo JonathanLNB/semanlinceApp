@@ -20,6 +20,7 @@ class DetalleSesion extends StatelessWidget {
   Sesion sesion;
   String nombre;
   String noControl;
+  bool aprovado;
 
   DetalleSesion(this.sesion);
 
@@ -82,74 +83,111 @@ class DetalleSesion extends StatelessWidget {
           child: new FloatingActionButton(
             backgroundColor: Colors.white,
             onPressed: () {
-              if (sesion.inscrito) {
+              if(aprovado) {
+                if (sesion.inscrito) {
+                  showDialog(
+                      context: context,
+                      builder: (_) =>
+                          AssetGiffyDialog(
+                            image: Image.asset('assets/images/eliminar.gif',
+                                fit: BoxFit.cover),
+                            title: Text(
+                              'Confirmación 😱',
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: "GoogleSans",
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.verdeDarkLightColor),
+                            ),
+                            description: Text(
+                              '¿${nombre.split(
+                                  " ")[2]} estás segur@ de desinscribirte a esta actividad?',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: "GoogleSans",
+                                  color: AppColors.azulMarino),
+                            ),
+                            buttonCancelText: Text(
+                              "Cancelar",
+                              style: TextStyle(
+                                  fontFamily: "GoogleSans",
+                                  color: Colors.white),
+                            ),
+                            buttonOkText: Text(
+                              "Aceptar",
+                              style: TextStyle(
+                                  fontFamily: "GoogleSans",
+                                  color: Colors.white),
+                            ),
+                            onOkButtonPressed: () {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => _onLoading(context));
+                              _Eliminar(context);
+                            },
+                          ));
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (_) =>
+                          FlareGiffyDialog(
+                            flarePath: 'assets/images/space_demo.flr',
+                            flareAnimation: 'loading',
+                            title: Text(
+                              'Confirmación 👌',
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: "GoogleSans",
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.verdeDarkLightColor),
+                            ),
+                            description: Text(
+                              '¿${nombre.split(
+                                  " ")[2]} estás segur@ de inscribirte a esta actividad?',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: "GoogleSans",
+                                  color: AppColors.azulMarino),
+                            ),
+                            buttonCancelText: Text(
+                              "Cancelar",
+                              style: TextStyle(
+                                  fontFamily: "GoogleSans",
+                                  color: Colors.white),
+                            ),
+                            buttonOkText: Text(
+                              "Aceptar",
+                              style: TextStyle(
+                                  fontFamily: "GoogleSans",
+                                  color: Colors.white),
+                            ),
+                            onOkButtonPressed: () {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => _onLoading(context));
+                              _Inscribir(context);
+                            },
+                          ));
+                }
+              }
+              else {
                 showDialog(
                     context: context,
-                    builder: (_) => FlareGiffyDialog(
-                          flarePath: 'assets/images/space_demo.flr',
-                          flareAnimation: 'loading',
-                          title: Text(
-                            'Confirmación 😱',
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: "GoogleSans",
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.verdeDarkLightColor),
-                          ),
-                          description: Text(
-                            '¿${nombre.split(" ")[2]} estás segur@ de desinscribirte a esta actividad?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "GoogleSans",
-                                color: AppColors.azulMarino),
-                          ),
-                          onOkButtonPressed: () {
-                            showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) => _onLoading(context));
-                            _Eliminar(context);
-                          },
-                        ));
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (_) => FlareGiffyDialog(
-                          flarePath: 'assets/images/space_demo.flr',
-                          flareAnimation: 'loading',
-                          title: Text(
-                            'Confirmación 👌',
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: "GoogleSans",
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.verdeDarkLightColor),
-                          ),
-                          description: Text(
-                            '¿${nombre.split(" ")[2]} estás segur@ de inscribirte a esta actividad?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "GoogleSans",
-                                color: AppColors.azulMarino),
-                          ),
-                          onOkButtonPressed: () {
-                            showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) => _onLoading(context));
-                            _Inscribir(context);
-                          },
-                        ));
+                    barrierDismissible: false,
+                    builder: (context) => _onError(
+                        context, "Las inscripciones inician el 29 de abril y terminan el 2 de mayo 😰"));
               }
             },
             tooltip: sesion.inscrito ? 'Inscribirse' : 'Desinscribirse',
             child: sesion.inscrito
                 ? new Image.asset(
                     "assets/images/cruzar.png",
-                    width: 25,
-                    height: 25,
+                    width: 35,
+                    height: 35,
                   )
                 : new Image.asset(
                     "assets/images/marca.png",
@@ -608,7 +646,7 @@ class DetalleSesion extends StatelessWidget {
                 shape: CircleBorder(),
                 child: CircleAvatar(
                   radius: 40.0,
-                  backgroundImage: new NetworkImage('http://i.pravatar.cc/300'),
+                  backgroundImage: new NetworkImage(Strings.imagenes+(sesion.ponente.imagen.length>0?sesion.ponente.imagen:"fotopersona.png")),
                 ),
               ),
             ],
@@ -621,82 +659,41 @@ class DetalleSesion extends StatelessWidget {
   _getSharedPreferences() async {
     nombre = await sharedPreferences.getNombre();
     noControl = await sharedPreferences.getNoControl();
+    aprovado = await sharedPreferences.getInscribir();
   }
 
   _onError(BuildContext context, String texto) {
-    return Material(
-        color: Colors.transparent,
-        child: Stack(alignment: Alignment.center, children: <Widget>[
-          Container(
-              width: 300,
-              height: 280,
-              margin: EdgeInsets.all(50),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                  shape: BoxShape.rectangle,
-                  image: new DecorationImage(
-                      image: new AssetImage("assets/images/fondo.png"),
-                      fit: BoxFit.none,
-                      repeat: ImageRepeat.repeat),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 15.0,
-                        offset: Offset(0.0, 7.0))
-                  ]),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage('assets/images/sad.png'),
-                    )),
-                  ),
-                  Container(
-                      margin: EdgeInsets.all(20),
-                      alignment: Alignment.center,
-                      child: Material(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        elevation: 5.0,
-                        color: Colors.white,
-                        child: Container(
-                            margin: EdgeInsets.all(10),
-                            alignment: Alignment.center,
-                            child: Text(
-                              texto,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: "GoogleSans",
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.azulMarino),
-                              textAlign: TextAlign.center,
-                            )),
-                      ))
-                ],
-              )),
-          Align(
-            alignment: Alignment.topRight,
-            child: RaisedButton.icon(
-                color: AppColors.azulMarino,
-                textColor: Colors.white,
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                ),
-                label: Text('Cerrar')),
-          )
-        ]));
+    return AssetGiffyDialog(
+      image: Image.asset(
+        'assets/images/errorf.gif',
+        fit: BoxFit.cover,
+      ),
+      title: Text(
+        'Error 😱',
+        style: TextStyle(
+            fontSize: 22,
+            fontFamily: "GoogleSans",
+            fontWeight: FontWeight.bold,
+            color: AppColors.verdeDarkLightColor),
+      ),
+      description: Text(
+        texto,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 15,
+            fontFamily: "GoogleSans",
+            color: AppColors.azulMarino),
+      ),
+      onlyOkButton: true,
+      buttonOkText: Text(
+        "Aceptar",
+        style: TextStyle(fontFamily: "GoogleSans", color: Colors.white),
+      ),
+      onOkButtonPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
   }
 
   _onLoading(BuildContext context) {
@@ -715,42 +712,49 @@ class DetalleSesion extends StatelessWidget {
     String basicAuth = 'Basic ' +
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server = "${Strings.server}api/movil/sesion/inscripcion";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.post(Uri.encodeFull(server),
-          headers: {
-            "content-type": "application/json",
-            "accept": "application/json"
-          },
-          body: jsonEncode(
-              {"idUsuario": noControl, "idSesion": sesion.idSesion}));
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        if (data['inscripcion'].toString() == '5') _onSuccessWeb(data, context);
-        if (data['inscripcion'].toString() == '4')
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => _onError(
-                  context, "Ya cuentas con el máximo de actividades  😰"));
-        if (data['inscripcion'].toString() == '3')
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => _onError(
-                  context, "Ya cuentas con el máximo de actividades 😰"));
-        if (data['inscripcion'].toString() == '2')
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => _onError(context,
-                  "Ya cuentas con el máximo de actidades de tu carrera 😰"));
-        if (data['inscripcion'].toString() == '1')
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => _onError(
-                  context, "Esta sesión se cruza con otra actividad 😰"));
+      try {
+        http.Response response = await http.post(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            },
+            body: jsonEncode(
+                {"idUsuario": noControl, "idSesion": sesion.idSesion}));
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          if (data['inscripcion'].toString() == '5')
+            _onSuccessWeb(data, context);
+          if (data['inscripcion'].toString() == '4')
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _onError(
+                    context, "Ya cuentas con el máximo de actividades  😰"));
+          if (data['inscripcion'].toString() == '3')
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _onError(
+                    context, "Ya cuentas con el máximo de actividades 😰"));
+          if (data['inscripcion'].toString() == '2')
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _onError(context,
+                    "Ya cuentas con el máximo de actividades de tu carrera 😰"));
+          if (data['inscripcion'].toString() == '1')
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _onError(
+                    context, "Esta sesión se cruza con otra actividad 😰"));
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
@@ -762,18 +766,24 @@ class DetalleSesion extends StatelessWidget {
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server =
         "${Strings.server}api/movil/sesion/inscripcion/${noControl}/${sesion.idSesion}";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.delete(
-        Uri.encodeFull(server),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json"
-        },
-      );
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data, context);
+      try {
+        http.Response response = await http.delete(
+          Uri.encodeFull(server),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+        );
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data, context);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 

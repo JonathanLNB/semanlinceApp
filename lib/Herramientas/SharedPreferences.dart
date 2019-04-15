@@ -66,4 +66,15 @@ class SharedPreferencesTest {
     prefs.setString("foto", foto);
     return prefs.commit();
   }
+
+  Future<bool> getInscribir() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("inscribir") ?? false;
+  }
+
+  Future<bool> setInscribir(bool inscribir) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("inscribir", inscribir);
+    return prefs.commit();
+  }
 }

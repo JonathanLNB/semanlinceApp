@@ -1,10 +1,14 @@
 import 'dart:math';
 
+import 'package:semana_lince/Herramientas/Strings.dart';
+
 class Herramientas {
   static String getCategoria(int idCategoria) {
     switch (idCategoria) {
+      case 0:
+        return Strings.buscador;
       case 1:
-        return "Academica";
+        return "Académica";
 
       case 2:
         return "Arte y Cultura";
@@ -62,9 +66,6 @@ class Herramientas {
       case 5:
         //Empresa
         return "assets/images/Empresas/$aux.jpg";
-
-      default:
-        return "assets/images/conferencia.jpg";
     }
   }
 

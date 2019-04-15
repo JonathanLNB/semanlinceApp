@@ -57,8 +57,8 @@ class _ListaCategorias extends State<ListaCategorias> {
       children: <Widget>[
         Container(
           margin: EdgeInsets.only(top: 60, bottom: 20),
-          width: 60,
-          height: 60,
+          width: 80,
+          height: 80,
           decoration: BoxDecoration(
               image: DecorationImage(
             image: AssetImage('assets/images/sad.png'),
@@ -117,7 +117,7 @@ class _ListaCategorias extends State<ListaCategorias> {
               context,
               MaterialPageRoute(
                   builder: (BuildContext context) =>
-                      new MostrarEventos(eventos)));
+                      new MostrarEventos(eventos, idCategoria)));
         },
         child: Container(
             margin: EdgeInsets.only(left: 20),
@@ -206,18 +206,24 @@ class _ListaCategorias extends State<ListaCategorias> {
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server =
         "${Strings.server}api/movil/eventos/${noControl}/${idCategoria}";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.get(Uri.encodeFull(server), headers: {
-        "content-type": "application/json",
-        "accept": "application/json"
-      });
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data);
+      try {
+        http.Response response = await http.get(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            });
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text(Strings.errorS,
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
-
     getData();
   }
 

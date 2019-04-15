@@ -5,7 +5,7 @@ import 'package:semana_lince/Principal/principal.dart';
 import 'package:semana_lince/SignIn.dart';
 import 'package:splashscreen/splashscreen.dart';
 
-void main(){
+void main() {
   runApp(new MaterialApp(
     title: 'Semana Lince',
     debugShowCheckedModeBanner: false,
@@ -18,9 +18,9 @@ void main(){
         loaderColor: AppColors.verdeDarkColor,
       ),
     ),
-      routes: <String, WidgetBuilder>{
-        '/principal': (BuildContext context) => new Principal(),
-        '/signIn': (BuildContext context) => new SignIn(),
-      },
+    routes: <String, WidgetBuilder>{
+      '/principal': (BuildContext context) => new Principal(),
+      '/signIn': (BuildContext context) => new SignIn(),
+    },
   ));
 }

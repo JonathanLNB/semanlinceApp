@@ -53,20 +53,20 @@ class _MostrarSesiones extends State<MostrarSesiones> {
                 repeat: ImageRepeat.repeat),
           ),
         ),
-        sesiones.length>0?
-        Container(
-          alignment: Alignment.center,
-          child: ListView.builder(
-            padding: EdgeInsets.only(left: 10, top: 120),
-            itemBuilder: (context, index) {
-              Sesion aux = sesiones[index];
-              return SesionAdapter(aux);
-            },
-            scrollDirection: Axis.vertical,
-            itemCount: sesiones.length,
-          ),
-        ):
-        getSad(),
+        sesiones.length > 0
+            ? Container(
+                alignment: Alignment.center,
+                child: ListView.builder(
+                  padding: EdgeInsets.only(left: 10, top: 120),
+                  itemBuilder: (context, index) {
+                    Sesion aux = sesiones[index];
+                    return SesionAdapter(aux);
+                  },
+                  scrollDirection: Axis.vertical,
+                  itemCount: sesiones.length,
+                ),
+              )
+            : getSad(),
         NavigationBar(false),
         Padding(
           padding: Platform.isAndroid
@@ -111,15 +111,22 @@ class _MostrarSesiones extends State<MostrarSesiones> {
         base64Encode(utf8.encode('${Strings.usuario}:${Strings.contrasena}'));
     String server =
         "${Strings.server}api/movil/sesion/${idEvento}/${noControl}";
-    print(server);
     Future<String> getData() async {
-      http.Response response = await http.get(Uri.encodeFull(server), headers: {
-        "content-type": "application/json",
-        "accept": "application/json"
-      });
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['valid'].toString() == '1') {
-        _onSuccessWeb(data);
+      try {
+        http.Response response = await http.get(Uri.encodeFull(server),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            });
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['valid'].toString() == '1') {
+          _onSuccessWeb(data);
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text("Ocurrió un error, inténtalo más tarde 😰",
+                style: TextStyle(fontFamily: "GoogleSans"))));
       }
     }
 
