@@ -21,6 +21,18 @@
             "package_name": "com.jonathanlnb.semanalince",
             "certificate_hash": "382b21a4212ed8742c2ad4e0c8031c0ec0814375"
           }
+        },
+        {
+          "client_id": "448122508112-fj0jbe7jo278mhj6nb6bfah2vjvlaf41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jonathanlnb.semanalince",
+            "certificate_hash": "a77407262b26bbf2378d414f37c5844e403d035c"
+          }
+        },
+        {
+          "client_id": "448122508112-ibsffjju10gl77hiqvse2jga6pvkdjt0.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -34,6 +46,13 @@
             {
               "client_id": "448122508112-ibsffjju10gl77hiqvse2jga6pvkdjt0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "448122508112-fa7k9aq92pb9qg5un4r86ne5g7fhh2d9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jonathanlnb.semanaLinceios"
+              }
             }
           ]
         }
